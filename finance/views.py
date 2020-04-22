@@ -5,16 +5,16 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
 
-from tasks.models import Task
+from finance.models import FinanceObjectType
 
 
-class TaskCreate(CreateView):
+class FinanceObjectTypeCreate(CreateView):
     model = Task
     fields = '__all__'
     success_url = reverse_lazy('task-all')
 
 
-class TaskUpdate(UpdateView):
+class FinanceObjectTypeUpdate(UpdateView):
     model = Task
     fields = '__all__'
     success_url = reverse_lazy('task-all')
@@ -25,7 +25,7 @@ class TaskUpdate(UpdateView):
         return context
 
 
-class TaskDelete(View):
+class FinanceObjectTypeDelete(View):
 
     def post(self, request: HttpRequest, pk: int) -> HttpResponse:
         task = get_object_or_404(Task, pk=pk)
@@ -34,7 +34,7 @@ class TaskDelete(View):
         return HttpResponseRedirect(reverse('task-all'))
 
 
-class TaskList(ListView):
+class FinanceObjectTypeList(ListView):
     model = Task
 
     def get_queryset(self):

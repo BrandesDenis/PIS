@@ -1,0 +1,30 @@
+{%extends 'base.html' %}
+
+{% block page_title_block%}
+Типы объектов
+{% endblock%}
+
+{% block body_block%}
+<br>
+<a href="{%url types-create %}">Создать</a>
+<br>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">title</th>
+            <th scope="col">is_positive</th>
+            <th scope="col">is_exchange</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in object_list %}
+        <tr>
+            <td><a href="{%url 'types-detail' obj.pk%}">obj.title</a></td>
+            <td>obj.is_positive</td>
+            <td>obj.is_exchange</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock%}

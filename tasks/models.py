@@ -25,7 +25,7 @@ class Task(models.Model):
         (42, '42'),
         (43, '43'),
         (51, '51'),
-        (52, '51'),
+        (52, '52'),
     )
 
     statuses = (
@@ -39,7 +39,7 @@ class Task(models.Model):
     start = models.DateField(default=date.today)
     end = models.DateField()
     status = models.IntegerField(choices=statuses, default=0)
-    description = models.TextField(default='')
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ['end', 'title']
