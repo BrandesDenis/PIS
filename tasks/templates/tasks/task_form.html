@@ -1,0 +1,12 @@
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+
+{%if is_update%}
+<form method="post" action = "{%url 'task-delete' object.pk %}">
+    {% csrf_token %}
+    <input type="submit" value="delete">
+</form>
+{%endif%}

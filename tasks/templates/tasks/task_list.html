@@ -1,0 +1,9 @@
+<h1>Tasks</h1>
+<ul>
+{% for task in object_list %}
+    <li>{{ task.end|date }} - <a href="{%url 'task-detail' task.pk%}">{{ task.title}}</a> - {{ task.paragraph}} - {{ task.status}}</li>
+    
+{% empty %}
+    <li>No tasks yet.</li>
+{% endfor %}
+</ul>
