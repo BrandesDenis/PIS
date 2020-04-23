@@ -29,8 +29,10 @@
         <tbody>
             {%if is_update%}
             {% for row in report_rows%}
-            <td></td>{{row.fin_object.title}}</td>
+            <tr>
+            <td>{{row.fin_object.title}}</td>
             <td>{{row.total}}</td>
+            </tr>
             {%endfor%}
             {%endif%}
         </tbody>
@@ -41,8 +43,10 @@
         var tableRef = document.getElementById('report_table').getElementsByTagName('tbody')[0];
 
         var row_template = `
-        <td></td>{{row_form.fin_object}}</td>
-        <td>{{row_form.total}}</td>
+        <tr>
+            <td>{{row_form.fin_object}}</td>
+            <td>{{row_form.total}}</td>
+        </tr>
         `
 
         function addRow() {

@@ -121,7 +121,12 @@ class DayReportView(View):
                     new_report_row = DayReportRow(report=report, fin_object=fin_object)
                 if 'total' in k:
                     row_total = float(v)
-                    report_sum += row_total
+
+                    if fin_object.object_type.is_positive:
+                        report_sum += row_total
+                    else:
+                        report_sum -= row_total
+
                     new_report_row.total = row_total
                     new_report_row.save()
 

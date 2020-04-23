@@ -14,7 +14,6 @@
         <tr>
             <th scope="col">title</th>
             <th scope="col">is_positive</th>
-            <th scope="col">is_exchange</th>
         </tr>
     </thead>
     <tbody>
@@ -22,7 +21,6 @@
         <tr>
             <td><a href="{%url 'types-detail' obj.pk%}">{{obj.title}}</a></td>
             <td>{{obj.is_positive}}</td>
-            <td>{{obj.is_exchange}}</td>
         </tr>
         {% endfor %}
     </tbody>
