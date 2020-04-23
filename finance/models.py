@@ -7,7 +7,9 @@ from django.db import models
 class FinanceObjectType(models.Model):
     title = models.CharField(unique=True, max_length=100)
     is_positive = models.BooleanField(default=False)
-    is_exchange = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
 
 
 class FinanceObject(models.Model):
@@ -25,3 +27,9 @@ class DayReport(models.Model):
 
     total = models.FloatField()
     comment = models.TextField(blank=True)
+
+
+class DayReportRow(models.Model):
+    report = models.ForeignKey(DayReport, related_name='rows')
+    fin_object = models.ForeignKey(FinanceObject)
+    total = models.PositiveIntegerField()

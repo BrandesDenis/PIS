@@ -1,0 +1,15 @@
+{%extends 'finance/base.html'%}
+
+{% block page_title_block%}
+Финансовый блок
+{% endblock%}
+
+{% block body_block%}
+<a href="{%url 'types-all' %}">Типы объектов</a>
+<br>
+<br>
+<a href="{%url 'objects-all' %}">Объекты</a>
+<br>
+<br>
+<a href="{%url 'day_reports-all' %}">Ежедневные отчеты</a>
+{% endblock%}

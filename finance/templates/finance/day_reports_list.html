@@ -1,0 +1,30 @@
+{%extends 'finance/base.html' %}
+
+{% block page_title_block%}
+Ежедневные отчеты
+{% endblock%}
+
+{% block body_block%}
+<br>
+<a href="{%url 'day_reports-create' %}">Создать</a>
+<br>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">date</th>
+            <th scope="col">total</th>
+            <th scope="col">p_union</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in object_list %}
+        <tr>
+            <td><a href="{%url 'day_reports-detail' obj.pk%}">{{obj.date}}</a></td>
+            <td>{{obj.total}}</td>
+            <td>{{obj.p_union}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock%}

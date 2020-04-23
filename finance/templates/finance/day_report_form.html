@@ -1,0 +1,50 @@
+{%extends 'finance/base.html' %}
+
+{% block page_title_block%}
+Новый ежедневный отчет
+{% endblock%}
+
+{% block body_block%}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Сохранить">
+
+    <input type="button" value="row +" onClick="addRow()">
+
+    <table class="table" id="report_table">
+        <thead>
+            <tr>
+                <th scope="col">object</th>
+                <th scope="col">total</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script type="text/javascript">
+
+        var tableRef = document.getElementById('report_table');
+
+        var rowHtmlContent = `
+            <th scope="col">Объект</th>
+            <input type="text" name="row_data" min="0" required id="row_data">
+            <input type="number" name="row_data" min="0" required id="row_data">
+            `;
+
+        function addRow() {
+            tableRef.insertRow(tableRef.rows.length).innerHTML = rowHtmlContent
+        }
+    </script>
+
+</form>
+
+{%if is_update%}
+<form method="post" action="{%url 'day_reports-delete' object.pk %}">
+    {% csrf_token %}
+    <input type="submit" value="delete">
+</form>
+{%endif%}
+
+{% endblock%}
