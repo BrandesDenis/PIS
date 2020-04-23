@@ -17,6 +17,9 @@ class FinanceObject(models.Model):
         FinanceObjectType, on_delete=models.CASCADE, related_name='fin_objects')
     title = models.CharField(unique=True, max_length=100)
 
+    def __str__(self):
+        return self.title
+
 
 class DayReport(models.Model):
     date = models.DateField(default=date.today, unique=True)
@@ -25,11 +28,11 @@ class DayReport(models.Model):
     p3 = models.PositiveIntegerField()
     p_union = models.PositiveIntegerField()
 
-    total = models.FloatField()
+    total = models.FloatField(default=0, blank=True)
     comment = models.TextField(blank=True)
 
 
 class DayReportRow(models.Model):
-    report = models.ForeignKey(DayReport, related_name='rows')
-    fin_object = models.ForeignKey(FinanceObject)
+    report = models.ForeignKey(DayReport, related_name='rows', on_delete=models.CASCADE)
+    fin_object = models.ForeignKey(FinanceObject, on_delete=models.PROTECT)
     total = models.PositiveIntegerField()

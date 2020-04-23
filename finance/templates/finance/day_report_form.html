@@ -1,15 +1,22 @@
 {%extends 'finance/base.html' %}
 
 {% block page_title_block%}
+{%if is_update %}
+Ежедневный отчет
+{%else%}
 Новый ежедневный отчет
+{%endif%}
 {% endblock%}
 
 {% block body_block%}
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Сохранить">
 
+    {{ form.as_p }}
+
+    <br>
+
+    <br>
     <input type="button" value="row +" onClick="addRow()">
 
     <table class="table" id="report_table">
@@ -20,27 +27,40 @@
             </tr>
         </thead>
         <tbody>
+            {%if is_update%}
+            {% for row in report_rows%}
+            <td></td>{{row.fin_object.title}}</td>
+            <td>{{row.total}}</td>
+            {%endfor%}
+            {%endif%}
         </tbody>
     </table>
 
     <script type="text/javascript">
 
-        var tableRef = document.getElementById('report_table');
+        var tableRef = document.getElementById('report_table').getElementsByTagName('tbody')[0];
 
-        var rowHtmlContent = `
-            <th scope="col">Объект</th>
-            <input type="text" name="row_data" min="0" required id="row_data">
-            <input type="number" name="row_data" min="0" required id="row_data">
-            `;
+        var row_template = `
+        <td></td>{{row_form.fin_object}}</td>
+        <td>{{row_form.total}}</td>
+        `
 
         function addRow() {
-            tableRef.insertRow(tableRef.rows.length).innerHTML = rowHtmlContent
+
+            var row_id = tableRef.rows.length
+
+            var rowHtmlContent = row_template.replace('fin_object', 'fin_object' + row_id).replace('total', 'total' + row_id)
+
+            tableRef.insertRow(row_id).innerHTML = rowHtmlContent
+
         }
     </script>
 
+    <input type="submit" value="Сохранить">
+
 </form>
 
-{%if is_update%}
+{%if is_update %}
 <form method="post" action="{%url 'day_reports-delete' object.pk %}">
     {% csrf_token %}
     <input type="submit" value="delete">
