@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+    {% if filter%}
+    <h4>{{filter}}</h4>
+    <br>
+    {% endif %}
+    {% if thoughts%}
+    <ul>
+        {% for thought in thoughts %}
+            <li> 
+                <a href="/thoughts/{{thought.id}}"> {{thought.name}} </a>
+            </li> 
+        {% endfor %}
+    </ul>    
+    {% else %}       
+        Пока нет ни одной мысли
+    {% endif %}
+{% endblock %}

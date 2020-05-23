@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+    <h3>{{name}}</h3>
+    <br>
+    <br>
+    Статус: {{status}}
+    <br>
+    Дата создания: {{created}}
+    <br>
+    Последние изменения: {{last_modified}}
+    <br>
+    <br>
+    {% if topics%}
+        Темы:
+        <br>
+        {% for topic in topics %}
+            <li> 
+                <a href="for_topic/{{topic.id}}"> {{topic.name}} </a>
+            </li>
+        {% endfor %}
+    {% else %}       
+        Тем нет
+    {% endif %} 
+    <br>
+    <br>
+    Содержание:
+    <br>
+    <br>
+    {{text|safe}}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+    {% if paragraphs%}
+    <ul>
+        {% for paragraph in paragraphs %}
+            <li> 
+                <h4>{{paragraph.name}}</h4>
+                <ul>
+                    {% for topic in paragraph.topics %}
+                    <li>
+                        <a href="for_topic/{{topic.id}}"> {{topic.name}} </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </li> 
+        {% endfor %}
+    </ul>    
+    {% else %}       
+        Пока нет ни одной мысли
+    {% endif %}
+    
+{% endblock %}
