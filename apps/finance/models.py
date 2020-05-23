@@ -1,5 +1,4 @@
 from datetime import date
-from typing import NoReturn
 
 from django.db import models
 
@@ -14,7 +13,8 @@ class FinanceObjectType(models.Model):
 
 class FinanceObject(models.Model):
     object_type = models.ForeignKey(
-        FinanceObjectType, on_delete=models.CASCADE, related_name='fin_objects')
+        FinanceObjectType, on_delete=models.CASCADE, related_name="fin_objects"
+    )
     title = models.CharField(unique=True, max_length=100)
 
     def __str__(self):
@@ -33,6 +33,6 @@ class DayReport(models.Model):
 
 
 class DayReportRow(models.Model):
-    report = models.ForeignKey(DayReport, related_name='rows', on_delete=models.CASCADE)
+    report = models.ForeignKey(DayReport, related_name="rows", on_delete=models.CASCADE)
     fin_object = models.ForeignKey(FinanceObject, on_delete=models.PROTECT)
     total = models.PositiveIntegerField()
