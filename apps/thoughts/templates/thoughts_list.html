@@ -1,19 +1,18 @@
 {% extends 'base.html' %}
 
 {% block body_block %}
-    {% if filter%}
-    <h4>{{filter}}</h4>
-    <br>
-    {% endif %}
-    {% if thoughts%}
-    <ul>
-        {% for thought in thoughts %}
-            <li> 
-                <a href="/thoughts/{{thought.id}}"> {{thought.name}} </a>
-            </li> 
-        {% endfor %}
-    </ul>    
-    {% else %}       
-        Пока нет ни одной мысли
-    {% endif %}
+<br>
+<a href="{%url 'thoughts-new'%}">Создать новую</a>
+<br>
+{% if object_list%}
+<ul>
+    {% for thought in object_list %}
+    <li>
+        <a href="/thoughts/{{thought.pk}}"> {{thought.title}} </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+Пока нет ни одной записи
+{% endif %}
 {% endblock %}

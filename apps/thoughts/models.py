@@ -3,8 +3,11 @@ from django.db import models
 
 
 class Paragraph(models.Model):
-    number = models.PositiveIntegerField(max_length=4, unique=True, blank=False)
+    number = models.PositiveIntegerField(unique=True, blank=False)
     title = models.CharField(max_length=100, unique=True, blank=False)
+
+    class Meta:
+        ordering = ["number"]
 
 
 class Topic(models.Model):
@@ -12,7 +15,7 @@ class Topic(models.Model):
     title = models.CharField(max_length=100, unique=True, blank=False)
 
     class Meta:
-        ordering = ["-paragraph"]
+        ordering = ["paragraph"]
 
 
 class Thought(models.Model):
@@ -21,7 +24,7 @@ class Thought(models.Model):
     created = models.DateField(default=datetime.date.today)
     last_modified = models.DateField(auto_now=True)
     text = models.TextField()
-    finished = models.BooleanField()
+    finished = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-created"]

@@ -1,60 +1,49 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from typing import Optional
+
+from django.shortcuts import get_object_or_404
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views import View
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.list import ListView
+from django.urls import reverse_lazy
 
-from apps.thoughts.models import Thought, Topic
+from apps.thoughts.models import Thought
 
 
-class ThoughtView(View):
+class ThoughtCreateView(CreateView):
+    model = Thought
+    template_name = "thought.html"
+    fields = "__all__"
+    success_url = reverse_lazy("day_reports-all")
 
-    def post(self):
+    def post(self, request):
         a = 1
 
-    def get(self, request: HttpRequest, thought_id: int) -> HttpResponse:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context["row_form"] = ReportRowForm
 
-        thought = Thought.by_id(thought_id)
-        if not thought:
-            return HttpResponse('Не найдено', status=404)
-
-        context = {
-            'name': thought.title,
-            'status': 'Завершено' if thought.finished else 'Не завершено',
-            'created': str(thought.created),
-            'last_modified': str(thought.last_modified),
-            'topics': [{'id': top.id, 'name': top.title} for top in thought.topics.all()],
-            'text': thought.text,
-        }
-
-        return render(request, 'thought.html', context)
+        return context
 
 
-class ThoughtListView(View):
+class ThoughtUpdateView(UpdateView):
+    model = Thought
+    template_name = "thought.html"
+    fields = "__all__"
+    success_url = reverse_lazy("day_reports-all")
 
-    def get(self, request: HttpRequest) -> HttpResponse:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_update"] = True
+        return context
 
-        topics = Topic.objects.order_by('paragraph__title').all()
 
-        topics_data: List[Dict] = []
+class ThoughtDeleteView(DeleteView):
+    model = Thought
+    success_url = reverse_lazy("day_reports-all")
 
-        paragraphs_dict: Dict[str, List[Thought]] = {}
 
-        for topic in topics:
-            topic_data = {'name': topic.title, 'id': topic.id}
-
-            paragraph_name = topic.paragraph.title
-            topics_list = paragraphs_dict.get(paragraph_name)
-
-            if topics_list is None:
-                paragraphs_dict[paragraph_name] = [topic_data]
-            else:
-                topics_list.append(topic_data)
-
-        paragraphs_data = [{'name': k, 'topics': v}
-                           for k, v in paragraphs_dict.items()]
-
-        context = {
-            'paragraphs': paragraphs_data,
-        }
-
-        return render(request, 'index.html', context)
+class ThoughtListView(ListView):
+    model = Thought
+    template_name = "thoughts_list.html"
