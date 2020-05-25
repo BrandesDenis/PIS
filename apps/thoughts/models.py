@@ -11,11 +11,14 @@ class Paragraph(models.Model):
 
 
 class Topic(models.Model):
-    paragraph = models.ForeignKey(Paragraph, on_delete=models.CASCADE)
+    paragraph = models.ForeignKey(Paragraph, on_delete=models.PROTECT)
     title = models.CharField(max_length=100, unique=True, blank=False)
 
     class Meta:
         ordering = ["paragraph"]
+
+    def __str__(self):
+        return f'{self.title}({self.paragraph.number})'
 
 
 class Thought(models.Model):

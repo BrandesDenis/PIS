@@ -8,10 +8,54 @@
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">
+
+
+    <input type="button" value="row +" onClick="addRow()">
+
+
+    <table class="table" id="topics">
+        <thead>
+            <tr>
+                <th scope="col">Темы</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%if is_update%}
+            {% for topic in topics%}
+            <tr>
+                <td>{{topic.title}}</td>
+            </tr>
+            {%endfor%}
+            {%endif%}
+        </tbody>
+    </table>
+
+    <script type="text/javascript">
+
+        var tableRef = document.getElementById('topics').getElementsByTagName('tbody')[0];
+
+        var row_template = `
+        <tr>
+            <td>{{topic_row_form.topic}}</td>
+        </tr>
+        `
+
+        function addRow() {
+
+            var row_id = tableRef.rows.length
+
+            var rowHtmlContent = row_template.replace('topic', 'topic' + row_id)
+
+            tableRef.insertRow(row_id).innerHTML = rowHtmlContent
+
+        }
+    </script>
+
+
 </form>
 
 {%if is_update%}
-<form method="post" action = "{%url 'task-delete' object.pk %}">
+<form method="post" action="{%url 'thoughts-delete' object.pk %}">
     {% csrf_token %}
     <input type="submit" value="delete">
 </form>
