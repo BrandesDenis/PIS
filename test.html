@@ -1,0 +1,142 @@
+
+
+
+<!doctype html>
+
+<head>
+    <style>
+        .selected {
+            background-color: powderblue;
+            color: #FFF;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <title>  ПИС  </title>
+</head>
+
+<body>
+    <h5> 
+ </h5>
+    <br>
+    
+<form method="post">
+    <input type="hidden" name="csrfmiddlewaretoken" value="B0XazZGMP3Us6YcmSLm78grWxyRDnQchPiKIANxRTqGrid3vLBoxUxIBiWlwtiIB">
+    <p><label for="id_title">Title:</label> <input type="text" name="title" value="тест ТЧ" maxlength="100" required id="id_title"></p>
+<p><label for="id_created">Created:</label> <input type="text" name="created" value="2020-05-25" required id="id_created"><input type="hidden" name="initial-created" value="2020-05-25" id="initial-id_created"></p>
+<p><label for="id_text">Text:</label> <textarea name="text" cols="40" rows="10" required id="id_text">
+тест</textarea></p>
+<p><label for="id_finished">Finished:</label> <input type="checkbox" name="finished" id="id_finished"></p>
+    <input type="submit" value="Save">
+
+
+    <input type="button" value="row +" onClick="addNewRow()">
+    <input type="button" value="row -" onClick="removeRow()">
+
+
+    <table class="table table-bordered" id="topics">
+        <thead>
+            <tr>
+                <th scope="col">Темы</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script type="text/javascript">
+
+        tableRef = document.getElementById('topics').getElementsByTagName('tbody')[0];
+
+        rowTemplate = `
+            <td><select name="topic" required id="id_topic">
+  <option value="" selected>---------</option>
+
+  <option value="4">123(1)</option>
+
+  <option value="1">test(111)</option>
+
+  <option value="2">REST(111)</option>
+
+  <option value="3">2___2(111)</option>
+
+  <option value="5">1111111(111)</option>
+
+</select></td>
+        `
+
+        function selectRow(row) {
+            activeRows = tableRef.getElementsByClassName('selected');
+            for (let item of activeRows) {
+                item.classList.remove("selected")
+            }
+            row.classList.add("selected")
+        }
+
+        function addRow(innerHTML) {
+            rowId = tableRef.rows.length
+            rowHtmlContent = innerHTML.replace('topic', 'topic' + rowId)
+            newRow = tableRef.insertRow(rowId)
+            newRow.innerHTML = rowHtmlContent
+            newRow.onclick = function () { selectRow(newRow) }
+        }
+
+        function addNewRow() {
+            addRow(rowTemplate)
+        }
+
+        function removeRow() {
+            activeRow = tableRef.getElementsByClassName('selected')[0];
+            tableRef.deleteRow(activeRow.rowIndex - 1)
+        }
+
+        
+            template = "<td><select name="topic" required id="id_topic">
+  <option value="">---------</option>
+
+  <option value="4">123(1)</option>
+
+  <option value="1" selected>test(111)</option>
+
+  <option value="2">REST(111)</option>
+
+  <option value="3">2___2(111)</option>
+
+  <option value="5">1111111(111)</option>
+
+</select></td>"
+            addRow(template)
+        
+            template = "<td><select name="topic" required id="id_topic">
+  <option value="">---------</option>
+
+  <option value="4">123(1)</option>
+
+  <option value="1">test(111)</option>
+
+  <option value="2" selected>REST(111)</option>
+
+  <option value="3">2___2(111)</option>
+
+  <option value="5">1111111(111)</option>
+
+</select></td>"
+            addRow(template)
+        
+
+    </script>
+
+
+</form>
+
+
+<form method="post" action="/thoughts/11/delete">
+    <input type="hidden" name="csrfmiddlewaretoken" value="B0XazZGMP3Us6YcmSLm78grWxyRDnQchPiKIANxRTqGrid3vLBoxUxIBiWlwtiIB">
+    <input type="submit" value="delete">
+</form>
+
+
+</body>

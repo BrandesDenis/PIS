@@ -4,51 +4,72 @@
 {% endblock %}
 
 {% block body_block %}
+
+{% for error in errors %}
+    {{error}}
+{% endfor %}
+
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">
 
 
-    <input type="button" value="row +" onClick="addRow()">
+    <input type="button" value="row +" onClick="addNewRow()">
+    <input type="button" value="row -" onClick="removeRow()">
 
 
-    <table class="table" id="topics">
+    <table class="table table-bordered" id="topics">
         <thead>
             <tr>
                 <th scope="col">Темы</th>
             </tr>
         </thead>
         <tbody>
-            {%if is_update%}
-            {% for topic in topics%}
-            <tr>
-                <td>{{topic.title}}</td>
-            </tr>
-            {%endfor%}
-            {%endif%}
         </tbody>
     </table>
 
     <script type="text/javascript">
 
-        var tableRef = document.getElementById('topics').getElementsByTagName('tbody')[0];
+        tableRef = document.getElementById('topics').getElementsByTagName('tbody')[0];
 
-        var row_template = `
-        <tr>
+        rowTemplate = `
             <td>{{topic_row_form.topic}}</td>
-        </tr>
         `
 
-        function addRow() {
-
-            var row_id = tableRef.rows.length
-
-            var rowHtmlContent = row_template.replace('topic', 'topic' + row_id)
-
-            tableRef.insertRow(row_id).innerHTML = rowHtmlContent
-
+        function selectRow(row) {
+            activeRows = tableRef.getElementsByClassName('selected');
+            for (let item of activeRows) {
+                item.classList.remove("selected")
+            }
+            row.classList.add("selected")
         }
+
+        function addRow(innerHTML) {
+            rowId = tableRef.rows.length
+            rowHtmlContent = innerHTML.replace('topic', 'topic' + rowId)
+            
+            newRow = tableRef.insertRow(rowId)
+            newRow.innerHTML = rowHtmlContent
+            newRow.onclick = function () { selectRow(this) }
+        }
+
+        function addNewRow() {
+            addRow(rowTemplate)
+        }
+
+        function removeRow() {
+            activeRow = tableRef.getElementsByClassName('selected')[0];
+            tableRef.deleteRow(activeRow.rowIndex - 1)
+        }
+
+        {% for topic_row in topics %}
+            template = `
+            <td>{{topic_row.topic}}</td>
+            `
+            addRow(template)
+        {% endfor %}
+
     </script>
 
 

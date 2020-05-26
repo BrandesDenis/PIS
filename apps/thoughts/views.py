@@ -1,50 +1,83 @@
 from typing import Dict
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import reverse
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
+from django.shortcuts import reverse, get_object_or_404, render
 from django.urls import reverse_lazy
+from django.views.generic.detail import SingleObjectTemplateResponseMixin
+from django.views.generic.edit import (
+    CreateView,
+    DeleteView,
+    ModelFormMixin,
+    ProcessFormView,
+    UpdateView,
+)
+from django.views.generic.list import ListView
 
-from apps.thoughts.models import Thought, Topic
 from apps.thoughts.forms import ThoughtForm, TopicRowForm
+from apps.thoughts.models import Thought, Topic
 
 
-class ThoughtCreateView(CreateView):
+# TODO - транзакция
+# TODO - подумать, над наиболее правильным View
+class ThoughtView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
     model = Thought
     template_name = "thought.html"
     form_class = ThoughtForm
     success_url = reverse_lazy("thoughts-list")
 
-    def post(self, request: HttpRequest) -> HttpResponse:
-        form = ThoughtForm(request.POST)
+    def get_object(self, queryset=None):
+        try:
+            return super().get_object(queryset)
+        except AttributeError:
+            return None
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        errors = []
+
+        form = self.form_class(request.POST, instance=self.object)
         if form.is_valid():
             thought = form.save()
 
-            for k, v in request.POST.items():
-                if "topic" in k:
-                    topic = Topic.objects.get(pk=v)
+            thought.topics.clear()
+            has_topics = False
+            for key, value in request.POST.items():
+                if "topic" in key:
+                    topic = get_object_or_404(Topic, pk=value)
                     thought.topics.add(topic)
+                    has_topics = True
 
-            return HttpResponseRedirect(reverse("thoughts-list"))
+            if not has_topics:
+                errors.append("Нельзя записать объект без темы")
+        else:
+            for _, error_list in form.errors.items():
+                for error in error_list:
+                    errors.append(error)
+
+        if errors:
+            context = self.get_context_data()
+            context["errors"] = errors
+            return render(request, self.template_name, context=context)
+        else:
+            return HttpResponseRedirect(reverse("thoughts-list"), context)
 
     def get_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
-        context["topic_row_form"] = TopicRowForm
-        return context
+        context["topic_row_form"] = TopicRowForm()
 
+        if self.object:
+            context["is_update"] = True
+            topics = [
+                TopicRowForm(initial={"topic": topic})
+                for topic in self.object.topics.all()
+            ]
+            context["topics"] = topics
 
-class ThoughtUpdateView(UpdateView):
-    model = Thought
-    template_name = "thought.html"
-    form_class = ThoughtForm
-    success_url = reverse_lazy("thoughts-list")
-
-    def get_context_data(self, **kwargs) -> Dict:
-        context = super().get_context_data(**kwargs)
-        context["topic_row_form"] = TopicRowForm
-        context["is_update"] = True
-        context["topics"] = self.object.topics.all()
         return context
 
 
