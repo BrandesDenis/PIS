@@ -1,14 +1,20 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse, get_object_or_404
 from django.views import View
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.detail import SingleObjectTemplateResponseMixin
+from django.views.generic.edit import (
+    CreateView,
+    UpdateView,
+    DeleteView,
+    ModelFormMixin,
+    ProcessFormView,
+)
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
 
 from apps.finance.models import (
-    FinanceObjectType,
     FinanceObject,
     DayReport,
     DayReportRow,
@@ -19,41 +25,6 @@ from apps.finance.forms import ReportForm, ReportRowForm
 class IndexView(View):
     def get(self, request: HttpRequest) -> HttpResponse:
         return render(request, "finance/index.html")
-
-
-class FinanceObjectTypeCreate(CreateView):
-    model = FinanceObjectType
-    template_name = "finance/fin_type_form.html"
-    fields = "__all__"
-    success_url = reverse_lazy("types-all")
-
-
-class FinanceObjectTypeUpdate(UpdateView):
-    model = FinanceObjectType
-    template_name = "finance/fin_type_form.html"
-    fields = "__all__"
-    success_url = reverse_lazy("types-all")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_update"] = True
-        return context
-
-
-class FinanceObjectTypeDelete(View):
-    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
-        task = get_object_or_404(FinanceObjectType, pk=pk)
-        task.delete()
-
-        return HttpResponseRedirect(reverse("types-all"))
-
-
-class FinanceObjectTypeList(ListView):
-    model = FinanceObjectType
-    template_name = "finance/fin_types_list.html"
-
-
-###
 
 
 class FinanceObjectCreate(CreateView):
@@ -69,18 +40,15 @@ class FinanceObjectUpdate(UpdateView):
     fields = "__all__"
     success_url = reverse_lazy("objects-all")
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
         context["is_update"] = True
         return context
 
 
-class FinanceObjectDelete(View):
-    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
-        task = get_object_or_404(FinanceObject, pk=pk)
-        task.delete()
-
-        return HttpResponseRedirect(reverse("objects-all"))
+class FinanceObjectDelete(DeleteView):
+    model = FinanceObject
+    template_name = "finance/fin_objects_list.html"
 
 
 class FinanceObjectList(ListView):
@@ -88,92 +56,83 @@ class FinanceObjectList(ListView):
     template_name = "finance/fin_objects_list.html"
 
 
-###
+class DayReportView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
+    model = DayReport
+    template_name = "finance/day_report_form.html"
+    form_class = ReportForm
+    success_url = reverse_lazy("day_reports-all")
 
+    def get_object(self, queryset=None) -> Optional[DayReport]:
+        try:
+            return super().get_object(queryset)
+        except AttributeError:
+            return None
 
-class DayReportView(View):
-    def get(self, request: HttpRequest, pk: Optional[int] = None) -> HttpResponse:
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
 
-        context: Dict[str, Any] = {
-            "row_form": ReportRowForm(),
-        }
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        self.object = self.get_object()
 
-        if pk is not None:
-            report = get_object_or_404(DayReport, pk=pk)
-            context["object"] = report
-            context["form"] = ReportForm(instance=report)
-            context["form"] = ReportForm(instance=report)
-            context["report_rows"] = report.rows.all()
-            context["is_update"] = True
-        else:
-            context["form"] = ReportForm()
+        errors = []
 
-        return render(request, "finance/day_report_form.html", context)
+        form = self.form_class(request.POST, instance=self.object)
+        if form.is_valid():
+            report = form.save()
+            report.rows.all().delete()
 
-    def post(self, request: HttpRequest) -> HttpResponse:
+            report_total = 0.0
+            for key, value in request.POST.items():
+                if "fin_object" in key:
+                    fin_object = get_object_or_404(FinanceObject, pk=value)
+                if "description" in key:
+                    description = value
+                if "total" in key:
+                    total = float(value)
 
-        report_form = ReportForm(request.POST)
-        if report_form.is_valid():
-            report_form.cleaned_data["total"] = 0
-            report = report_form.save()
-
-            report_sum = 0.0
-            for k, v in request.POST.items():
-                if "fin_object" in k:
-                    fin_object = FinanceObject.objects.get(pk=int(v))
-                    new_report_row = DayReportRow(report=report, fin_object=fin_object)
-                if "total" in k:
-                    row_total = float(v)
-
-                    if fin_object.object_type.is_positive:
-                        report_sum += row_total
+                    if fin_object.is_positive:
+                        report_total += total
                     else:
-                        report_sum -= row_total
+                        report_total -= total
 
-                    new_report_row.total = row_total
-                    new_report_row.save()
+                    DayReportRow(
+                        report=report,
+                        fin_object=fin_object,
+                        description=description,
+                        total=total,
+                    ).save()
 
-            if report_sum:
-                report.total = report_sum
-                report.save()
+            report.total = report_total
+            report.save()
 
+        else:
+            for _, error_list in form.errors.items():
+                for error in error_list:
+                    errors.append(error)
+
+        if errors:
+            context = self.get_context_data()
+            context["errors"] = errors
+            return render(request, self.template_name, context=context)
+        else:
             return HttpResponseRedirect(reverse("day_reports-all"))
 
-
-class DayReportCreate(CreateView):
-    model = DayReport
-    template_name = "finance/day_report_form.html"
-    fields = "__all__"
-    success_url = reverse_lazy("day_reports-all")
-
-    def post(self, request):
-        a = 1
-
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
-        context["row_form"] = ReportRowForm
+        context["row_form"] = ReportRowForm()
+
+        if self.object:
+            context["is_update"] = True
+            rows = [ReportRowForm(instance=row) for row in self.object.rows.all()]
+            context["rows"] = rows
 
         return context
 
 
-class DayReportUpdate(UpdateView):
+class DayReportDelete(DeleteView):
     model = DayReport
-    template_name = "finance/day_report_form.html"
-    fields = "__all__"
-    success_url = reverse_lazy("day_reports-all")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["is_update"] = True
-        return context
-
-
-class DayReportDelete(View):
-    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
-        task = get_object_or_404(DayReport, pk=pk)
-        task.delete()
-
-        return HttpResponseRedirect(reverse("day_reports-all"))
+    template_name = "finance/day_reports_list.html"
 
 
 class DayReportList(ListView):

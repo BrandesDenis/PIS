@@ -11,4 +11,4 @@ class ReportForm(ModelForm):
 class ReportRowForm(ModelForm):
     class Meta:
         model = DayReportRow
-        fields = ["fin_object", "total"]
+        fields = ["fin_object", "description", "total"]

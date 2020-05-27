@@ -5,16 +5,6 @@ appname = "finance"
 
 urlpatterns = [
     path("", views.IndexView.as_view(), name="finance-index"),
-    path("types/new", views.FinanceObjectTypeCreate.as_view(), name="types-create"),
-    path(
-        "types/<int:pk>", views.FinanceObjectTypeUpdate.as_view(), name="types-detail"
-    ),
-    path(
-        "types/<int:pk>/delete",
-        views.FinanceObjectTypeDelete.as_view(),
-        name="types-delete",
-    ),
-    path("types/all", views.FinanceObjectTypeList.as_view(), name="types-all"),
     path("objects/new", views.FinanceObjectCreate.as_view(), name="objects-create"),
     path(
         "objects/<int:pk>", views.FinanceObjectUpdate.as_view(), name="objects-detail"

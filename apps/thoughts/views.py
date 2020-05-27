@@ -1,15 +1,13 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse, get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import (
-    CreateView,
     DeleteView,
     ModelFormMixin,
     ProcessFormView,
-    UpdateView,
 )
 from django.views.generic.list import ListView
 
@@ -25,17 +23,17 @@ class ThoughtView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessForm
     form_class = ThoughtForm
     success_url = reverse_lazy("thoughts-list")
 
-    def get_object(self, queryset=None):
+    def get_object(self, queryset=None) -> Optional[Thought]:
         try:
             return super().get_object(queryset)
         except AttributeError:
             return None
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         self.object = self.get_object()
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         self.object = self.get_object()
 
         errors = []
@@ -64,7 +62,7 @@ class ThoughtView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessForm
             context["errors"] = errors
             return render(request, self.template_name, context=context)
         else:
-            return HttpResponseRedirect(reverse("thoughts-list"), context)
+            return HttpResponseRedirect(reverse("thoughts-list"))
 
     def get_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)
