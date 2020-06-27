@@ -1,11 +1,13 @@
 import math
 import calendar
 from typing import Iterable, Set
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 from django.http import QueryDict
 
-SQL_DATE_FORMAT = '%Y-%m-%d'
+
+HTML_DATE_FORMAT = '%Y-%m-%d'
+PRETTY_DATE_FORMAT = '%d.%m.%Y'
 
 
 def collect_rows_from_request(request_data: QueryDict,
@@ -42,3 +44,15 @@ def quarter_start(dt: date) -> date:
 
 def quarter_end(dt: date) -> date:
     return quarter_start(dt).replace(month=dt.month+3) - timedelta(days=1)
+
+
+def html_date_format(dt: date) -> str:
+    return dt.strftime(HTML_DATE_FORMAT)
+
+
+def date_from_html_format(dt: str) -> date:
+    return datetime.strptime(dt, HTML_DATE_FORMAT).date()
+
+
+def date_pretty_format(dt: date) -> str:
+    return dt.strftime(PRETTY_DATE_FORMAT)

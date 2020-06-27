@@ -4,18 +4,21 @@ from typing import Dict
 
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, reverse
+from django.shortcuts import get_object_or_404, render, reverse
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
+from apps.core.utils import (date_from_html_format, date_pretty_format,
+                             html_date_format, month_end, month_start)
 from apps.core.views import CreateUpdateView
-from apps.finance.forms import (BudgetForm, BudgetRowForm, ReportForm,
-                                ReportRowForm, PeriodicReportForm, NewPeriodicReportForm)
+from apps.finance.forms import (BudgetForm, BudgetRowForm,
+                                NewPeriodicReportForm, PeriodicReportForm,
+                                ReportForm, ReportRowForm)
 from apps.finance.models import (Budget, BudgetRow, DayReport, DayReportRow,
                                  FinanceObject, PeriodicReport)
-from apps.finance.reports import report_data
+from apps.finance.reports import fin_object_detalization, finance_report
 
 
 class IndexView(View):
@@ -167,23 +170,53 @@ class ReportView(View):
     def get(self, request: HttpRequest) -> HttpResponse:
         today = datetime.date.today()
 
-        # from apps.core.utils import quarter_start, quarter_end
+        start_date_param = request.GET.get('start_date')
+        if start_date_param:
+            start_date = date_from_html_format(start_date_param)
+        else:
+            start_date = month_start(today)
 
-        # quarter_start(today)
+        end_date_param = request.GET.get('end_date')
+        if end_date_param:
+            end_date = date_from_html_format(end_date_param)
+        else:
+            end_date = month_end(today)
 
-        start_date = request.GET.get('start_date')
-        if not start_date:
-            start_date = today.replace(day=1)
+        context = finance_report(start_date, end_date)
 
-        end_date = request.GET.get('end_date')
-        if not end_date:
-            end_date = today.replace(day=calendar.monthrange(today.year, today.month)[1])
+        context['start_date'] = html_date_format(start_date)
+        context['end_date'] = html_date_format(end_date)
 
-        context = report_data(start_date, end_date)
-        context['start_date'] = start_date
-        context['end_date'] = end_date
+        return render(request, "finance/reports/report.html", context)
 
-        return render(request, "finance/report.html", context)
+
+class FinObjectDetalizationReportView(View):
+
+    def get(self, request: HttpRequest, pk: int) -> HttpResponse:
+
+        fin_object = get_object_or_404(FinanceObject, pk=pk)
+
+        today = datetime.date.today()
+
+        start_date_param = request.GET.get('start_date')
+        if start_date_param:
+            start_date = date_from_html_format(start_date_param)
+        else:
+            start_date = month_start(today)
+
+        end_date_param = request.GET.get('end_date')
+        if end_date_param:
+            end_date = date_from_html_format(end_date_param)
+        else:
+            end_date = month_end(today)
+
+        context = fin_object_detalization(start_date, end_date, fin_object)
+
+        context['start_date'] = date_pretty_format(start_date)
+        context['end_date'] = date_pretty_format(end_date)
+        context['title'] = fin_object.title
+
+        return render(request, "finance/reports/fin_object_detalization.html", context)
 
 
 class PeriodicReportView(CreateUpdateView):

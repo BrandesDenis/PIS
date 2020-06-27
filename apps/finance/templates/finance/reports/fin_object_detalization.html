@@ -1,0 +1,35 @@
+{%extends 'core/base.html' %}
+
+{% block page_title_block%}
+Детализация расходов по объекту "{{title}}" c {{start_date}} по {{end_date}}
+{% endblock%}
+
+{% block navigation_block%}
+<a href="{%url 'finance-index' %}">Финансы</a>
+{% endblock%}
+
+{% block body_block%}
+
+<table class="table table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th>Дата</th>
+            <th>Сумма</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in report_rows%}
+        <tr>
+            <td><a href="{%url 'day_reports-detail' row.report%}">{{row.date}}</a></td>
+            <td>{{row.total}}</td>
+        </tr>
+        {% endfor%}
+        <tr style="font-weight:bold">
+            <td>Итого</td>
+            <td>{{total}}</td>
+        </tr>
+    </tbody>
+
+</table>
+
+{% endblock%}

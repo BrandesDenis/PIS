@@ -1,7 +1,7 @@
 {%extends 'core/base.html' %}
 
 {% block page_title_block%}
-Отчет
+Отчет по денежным средствам
 {% endblock%}
 
 {% block navigation_block%}
@@ -14,10 +14,8 @@
     <input type="date" name="start_date" id="id_start_date" value="{{start_date}}">
     <label for="id_end_date">по</label>
     <input type="date" name="end_date" id="id_end_date" value="{{end_date}}">
-    <br>
     <input type="submit" value="Обновить">
 </form>
-<br>
 <br>
 
 <table class="table table-hover">
@@ -36,7 +34,7 @@
         </tr>
         {% for row in incomes_rows%}
         <tr>
-            <td>&nbsp;&nbsp;{{row.title}}</td>
+            <td><a href="{%url 'finance-object-detalization' row.fin_object_pk%}?start_date={{start_date}}&end_date={{end_date}}">{{row.title}}</a></td>
             <td>{{row.reports}}</td>
             <td>{{row.budgets}}</td>
         </tr>
@@ -52,7 +50,7 @@
         {%else%}
         <tr>
         {%endif%}
-            <td>&nbsp;&nbsp;{{row.title}}</td>
+            <td><a href="{%url 'finance-object-detalization' row.fin_object_pk%}?start_date={{start_date}}&end_date={{end_date}}">{{row.title}}</a></td>
             <td>{{row.reports}}</td>
             <td>{{row.budgets}}</td>
         </tr>

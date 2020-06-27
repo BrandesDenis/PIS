@@ -2,12 +2,16 @@ from typing import Dict
 from datetime import date
 from decimal import Decimal
 
+from django.db.models import Sum
+
 from apps.core.sql import Query
+from apps.finance.models import FinanceObject, DayReportRow
 
 
-def report_data(start_date: date, end_date: date) -> Dict:
+def finance_report(start_date: date, end_date: date) -> Dict:
     query_text = '''
         SELECT
+            finance_financeobject.id as fin_object_pk,
             finance_financeobject.title,
             finance_financeobject.is_positive,
             sum(budgets_total) as budgets,
@@ -36,6 +40,7 @@ def report_data(start_date: date, end_date: date) -> Dict:
         INNER JOIN finance_financeobject
             ON rows.fin_object_id = finance_financeobject.id
         GROUP BY
+            finance_financeobject.id,
             finance_financeobject.title,
             finance_financeobject.is_positive
         '''
@@ -82,4 +87,20 @@ def report_data(start_date: date, end_date: date) -> Dict:
 
         'total_reports': total_reports,
         'total_budgets': total_budgets,
+    }
+
+
+def fin_object_detalization(start_date: date,
+                            end_date: date,
+                            fin_object: FinanceObject) -> Dict:
+
+    report_rows = DayReportRow.objects.filter(fin_object=fin_object)\
+        .filter(date__range=(start_date, end_date))\
+        .values('date', 'total', 'report')
+
+    total = report_rows.aggregate(Sum('total')).get('total__sum', 0)
+
+    return {
+        'report_rows': report_rows,
+        'total': total,
     }
