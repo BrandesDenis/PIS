@@ -1,0 +1,46 @@
+{%extends 'core/base.html' %}
+
+{% block page_title_block%}
+Периодические отчеты
+{% endblock%}
+
+{% block navigation_block%}
+<a href="{%url 'finance-index' %}">Финансы</a>
+{% endblock%}
+
+{% block body_block%}
+
+<form action="{%url 'periodic_reports-create' %}" method="get">
+    {{new_report_form.as_p}}
+    <input type="submit" value="Создать">
+<form>
+
+<br>
+<br>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Дата</th>
+            <th scope="col">Тип</th>
+            <th scope="col">П1</th>
+            <th scope="col">П13</th>
+            <th scope="col">П3</th>
+            <th scope="col">Общая</th>
+            <th scope="col">ДС</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in object_list %}
+        <tr>
+            <td><a href="{%url 'periodic_reports-detail' obj.pk%}">{{obj.date}}</a></td>
+            <td>{{obj.report_type}}</td>
+            <td>{{obj.p1}}</td>
+            <td>{{obj.p13}}</td>
+            <td>{{obj.p3}}</td>
+            <td>{{obj.p_union}}</td>
+            <td>{{obj.total}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock%}

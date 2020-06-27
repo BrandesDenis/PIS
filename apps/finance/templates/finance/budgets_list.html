@@ -1,7 +1,7 @@
 {%extends 'core/base.html' %}
 
 {% block page_title_block%}
-Ежедневные отчеты
+Бюджеты
 {% endblock%}
 
 {% block navigation_block%}
@@ -9,23 +9,23 @@
 {% endblock%}
 
 {% block body_block%}
-<a href="{%url 'day_reports-create' %}">Создать</a>
+<a href="{%url 'budgets-create' %}">Создать</a>
 <br>
 <br>
 <table class="table">
     <thead>
         <tr>
             <th scope="col">Дата</th>
-            <th scope="col">Итого ДС</th>
-            <th scope="col">Общая оценка</th>
+            <th scope="col">Планируемые доходы</th>
+            <th scope="col">Планируемые расходы</th>
         </tr>
     </thead>
     <tbody>
         {% for obj in object_list %}
         <tr>
-            <td><a href="{%url 'day_reports-detail' obj.pk%}">{{obj.date}}</a></td>
-            <td>{{obj.total}}</td>
-            <td>{{obj.p_union}}</td>
+            <td><a href="{%url 'budgets-detail' obj.pk%}">{{obj.date}}</a></td>
+            <td>{{obj.total_income}}</td>
+            <td>{{obj.total_outcome}}</td>
         </tr>
         {% endfor %}
     </tbody>

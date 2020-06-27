@@ -1,4 +1,4 @@
-{%extends 'finance/base.html'%}
+{%extends 'core/base.html'%}
 
 {% block page_title_block%}
 Финансовый блок
@@ -10,4 +10,13 @@
 <br>
 <br>
 <a href="{%url 'day_reports-all' %}">Ежедневные отчеты</a>
+<br>
+<br>
+<a href="{%url 'budgets-all' %}">Бюджеты</a>
+<br>
+<br>
+<a href="{%url 'periodic_reports-all' %}">Периодические отчеты</a>
+<br>
+<br>
+<a href="{%url 'finance-report' %}">Отчет</a>
 {% endblock%}

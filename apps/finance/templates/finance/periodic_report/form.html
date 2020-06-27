@@ -1,0 +1,33 @@
+{%extends 'core/base.html' %}
+
+{% block page_title_block%}
+{%if is_update %}
+Периодический отчет
+{%else%}
+Новый периодический отчет
+{%endif%}
+{% endblock%}
+
+{% block navigation_block%}
+<a href="{%url 'periodic_reports-all' %}">Список</a>
+{% endblock%}
+
+{% block body_block%}
+
+{%if is_update %}
+<form method="post" action="{%url 'periodic_reports-delete' object.pk %}">
+    {% csrf_token %}
+    <input type="submit" value="Удалить">
+</form>
+{%endif%}
+
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" value="Сохранить">
+    <br>
+    <br>
+    {{ form.as_p }}
+    <br>
+</form>
+
+{% endblock%}

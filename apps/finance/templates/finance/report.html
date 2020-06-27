@@ -1,0 +1,69 @@
+{%extends 'core/base.html' %}
+
+{% block page_title_block%}
+Отчет
+{% endblock%}
+
+{% block navigation_block%}
+<a href="{%url 'finance-index' %}">Финансы</a>
+{% endblock%}
+
+{% block body_block%}
+<form method="get" action="{%url 'finance-report'%}">
+    <label for="id_start_date">Период с</label>
+    <input type="date" name="start_date" id="id_start_date" value="{{start_date}}">
+    <label for="id_end_date">по</label>
+    <input type="date" name="end_date" id="id_end_date" value="{{end_date}}">
+    <br>
+    <input type="submit" value="Обновить">
+</form>
+<br>
+<br>
+
+<table class="table table-hover">
+    <thead class="thead-light">
+        <tr>
+            <th>Статья</th>
+            <th>Факт</th>
+            <th>План</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="font-weight:bold">
+            <td>Доходы</td>
+            <td>{{incomes_total_reports}}</td>
+            <td>{{incomes_total_budgets}}</td>
+        </tr>
+        {% for row in incomes_rows%}
+        <tr>
+            <td>&nbsp;&nbsp;{{row.title}}</td>
+            <td>{{row.reports}}</td>
+            <td>{{row.budgets}}</td>
+        </tr>
+        {% endfor%}
+        <tr style="font-weight:bold">
+            <td>Расходы</td>
+            <td>{{expenses_total_reports}}</td>
+            <td>{{expenses_total_budgets}}</td>
+        </tr>
+        {% for row in expenses_rows%}
+        {%if row.excess%}
+        <tr class="table-warning">
+        {%else%}
+        <tr>
+        {%endif%}
+            <td>&nbsp;&nbsp;{{row.title}}</td>
+            <td>{{row.reports}}</td>
+            <td>{{row.budgets}}</td>
+        </tr>
+        {% endfor%}
+        <tr style="font-weight:bold">
+            <td>Итого</td>
+            <td>{{total_reports}}</td>
+            <td>{{total_budgets}}</td>
+        </tr>
+    </tbody>
+
+</table>
+
+{% endblock%}

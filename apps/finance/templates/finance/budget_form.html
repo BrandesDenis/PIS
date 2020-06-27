@@ -2,20 +2,20 @@
 
 {% block page_title_block%}
 {%if is_update %}
-Ежедневный отчет
+Бюджет
 {%else%}
-Новый ежедневный отчет
+Новый бюджет
 {%endif%}
 {% endblock%}
 
 {% block navigation_block%}
-<a href="{%url 'day_reports-all' %}">Список отчетов</a>
+<a href="{%url 'day_reports-all' %}">Список бюджетов</a>
 {% endblock%}
 
 {% block body_block%}
 
 {%if is_update %}
-<form method="post" action="{%url 'day_reports-delete' object.pk %}">
+<form method="post" action="{%url 'budgets-delete' object.pk %}">
     {% csrf_token %}
     <input type="submit" value="Удалить">
 </form>
@@ -37,7 +37,6 @@
             <tr>
                 <th scope="col">Статья</th>
                 <th scope="col">Сумма</th>
-                <th scope="col">Описание</th>
             </tr>
         </thead>
         <tbody>
@@ -45,7 +44,6 @@
             <tr onClick="selectRow(this)">
                 <td>{{row.fin_object}}</td>
                 <td>{{row.total}}</td>
-                <td>{{row.description}}</td>
             </tr>
         {% endfor %}
         </tbody>
@@ -58,7 +56,6 @@
         var rowTemplate = `
             <td>{{row_form.fin_object}}</td>
             <td>{{row_form.total}}</td>
-            <td>{{row_form.description}}</td>
         `
         function selectRow(row) {
             activeRows = tableRef.getElementsByClassName('selected');

@@ -1,7 +1,11 @@
-{%extends 'finance/base.html' %}
+{%extends 'core/base.html' %}
 
 {% block page_title_block%}
 Объекты
+{% endblock%}
+
+{% block navigation_block%}
+<a href="{%url 'finance-index' %}">Финансы</a>
 {% endblock%}
 
 {% block body_block%}

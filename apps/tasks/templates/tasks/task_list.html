@@ -1,5 +1,11 @@
+{%extends 'core/base.html'%}
 {% load tasks_extras %}
-<h1>Tasks</h1>
+
+{% block page_title_block%}
+Список задач
+{% endblock%}
+
+{% block body_block%}
 <br>
 <a href="{%url 'task-create'%}">Создать новую</a>
 <br>
@@ -15,3 +21,4 @@
     <li>No tasks yet.</li>
 {% endfor %}
 </ul>
+{% endblock%}
