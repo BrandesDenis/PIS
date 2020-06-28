@@ -18,50 +18,57 @@
 </form>
 <br>
 
-<table class="table table-hover">
-    <thead class="thead-light">
-        <tr>
-            <th>Статья</th>
-            <th>Факт</th>
-            <th>План</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr style="font-weight:bold">
-            <td>Доходы</td>
-            <td>{{incomes_total_reports}}</td>
-            <td>{{incomes_total_budgets}}</td>
-        </tr>
-        {% for row in incomes_rows%}
-        <tr>
-            <td><a href="{%url 'finance-object-detalization' row.fin_object_pk%}?start_date={{start_date}}&end_date={{end_date}}">{{row.title}}</a></td>
-            <td>{{row.reports}}</td>
-            <td>{{row.budgets}}</td>
-        </tr>
-        {% endfor%}
-        <tr style="font-weight:bold">
-            <td>Расходы</td>
-            <td>{{expenses_total_reports}}</td>
-            <td>{{expenses_total_budgets}}</td>
-        </tr>
-        {% for row in expenses_rows%}
-        {%if row.excess%}
-        <tr class="table-warning">
-        {%else%}
-        <tr>
-        {%endif%}
-            <td><a href="{%url 'finance-object-detalization' row.fin_object_pk%}?start_date={{start_date}}&end_date={{end_date}}">{{row.title}}</a></td>
-            <td>{{row.reports}}</td>
-            <td>{{row.budgets}}</td>
-        </tr>
-        {% endfor%}
-        <tr style="font-weight:bold">
-            <td>Итого</td>
-            <td>{{total_reports}}</td>
-            <td>{{total_budgets}}</td>
-        </tr>
-    </tbody>
-
-</table>
-
+<div class="container-float-left">
+    <div class="row">
+        <div class="col-sm-7">
+            <table class="table table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Статья</th>
+                        <th>Факт</th>
+                        <th>План</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="font-weight:bold">
+                        <td>Доходы</td>
+                        <td>{{incomes_total_reports}}</td>
+                        <td>{{incomes_total_budgets}}</td>
+                    </tr>
+                    {% for row in incomes_rows%}
+                    <tr>
+                        <td><a href="{%url 'finance-object-detalization' row.fin_object_pk%}?start_date={{start_date}}&end_date={{end_date}}">{{row.title}}</a></td>
+                        <td>{{row.reports}}</td>
+                        <td>{{row.budgets}}</td>
+                    </tr>
+                    {% endfor%}
+                    <tr style="font-weight:bold">
+                        <td>Расходы</td>
+                        <td>{{expenses_total_reports}}</td>
+                        <td>{{expenses_total_budgets}}</td>
+                    </tr>
+                    {% for row in expenses_rows%}
+                    {%if row.excess%}
+                    <tr class="table-warning">
+                    {%else%}
+                    <tr>
+                    {%endif%}
+                        <td><a href="{%url 'finance-object-detalization' row.fin_object_pk%}?start_date={{start_date}}&end_date={{end_date}}">{{row.title}}</a></td>
+                        <td>{{row.reports}}</td>
+                        <td>{{row.budgets}}</td>
+                    </tr>
+                    {% endfor%}
+                    <tr style="font-weight:bold">
+                        <td>Итого</td>
+                        <td>{{total_reports}}</td>
+                        <td>{{total_budgets}}</td>
+                    </tr>
+                </tbody>
+            </table>             
+        </div>
+        <div class="col-sm-5">
+            {{distribution_plot|safe}}
+        </div>
+    </div>
+</div>
 {% endblock%}

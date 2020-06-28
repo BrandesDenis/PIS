@@ -53,6 +53,7 @@ urlpatterns = [
          name="periodic_reports-all"),
 
     path("report", views.ReportView.as_view(), name="finance-report"),
-    path("fin_object_detalization_report/<int:pk>", views.FinObjectDetalizationReportView.as_view(),
+    path("fin_object_detalization_report/<int:pk>",
+         views.FinObjectDetalizationReportView.as_view(),
          name="finance-object-detalization"),
 ]

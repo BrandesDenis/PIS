@@ -1,14 +1,62 @@
-from typing import Dict
+from typing import Dict, List
 from datetime import date
 from decimal import Decimal
 
 from django.db.models import Sum
 
 from apps.core.sql import Query
+from apps.core.plots import pie_plot, get_plot_html
 from apps.finance.models import FinanceObject, DayReportRow
 
 
 def finance_report(start_date: date, end_date: date) -> Dict:
+
+    incomes_rows = []
+    expenses_rows = []
+
+    incomes_total_reports = Decimal('0.0')
+    incomes_total_budgets = Decimal('0.0')
+
+    expenses_total_reports = Decimal('0.0')
+    expenses_total_budgets = Decimal('0.0')
+
+    data = _finance_report_data(start_date, end_date)
+
+    for row in data:
+
+        row['excess'] = row['reports'] > row['budgets']
+
+        if row['is_positive']:
+            incomes_rows.append(row)
+            incomes_total_reports += row['reports']
+            incomes_total_budgets += row['budgets']
+        else:
+            expenses_rows.append(row)
+            expenses_total_reports += row['reports']
+            expenses_total_budgets += row['budgets']
+
+    total_reports = incomes_total_reports - expenses_total_reports
+    total_budgets = incomes_total_budgets - expenses_total_budgets
+
+    distribution_plot = _expenses_distribution_plot(expenses_rows)
+
+    return {
+        'incomes_rows': incomes_rows,
+        'incomes_total_reports': incomes_total_reports,
+        'incomes_total_budgets': incomes_total_budgets,
+
+        'expenses_rows': expenses_rows,
+        'expenses_total_reports': expenses_total_reports,
+        'expenses_total_budgets': expenses_total_budgets,
+
+        'total_reports': total_reports,
+        'total_budgets': total_budgets,
+
+        'distribution_plot': distribution_plot,
+    }
+
+
+def _finance_report_data(start_date: date, end_date: date) -> List:
     query_text = '''
         SELECT
             finance_financeobject.id as fin_object_pk,
@@ -49,45 +97,24 @@ def finance_report(start_date: date, end_date: date) -> Dict:
         'start_date': start_date,
         'end_date': end_date,
     }
-    data = Query(query_text).execute(params)
+    return Query(query_text).execute(params)
 
-    incomes_rows = []
-    expenses_rows = []
 
-    incomes_total_reports = Decimal('0.0')
-    incomes_total_budgets = Decimal('0.0')
+def _expenses_distribution_plot(expenses_rows: List[Dict]) -> str:
+    values = []
+    labels = []
 
-    expenses_total_reports = Decimal('0.0')
-    expenses_total_budgets = Decimal('0.0')
+    for row in expenses_rows:
+        value = row.get('reports')
+        if value:
+            values.append(value)
+            labels.append(row.get('title'))
 
-    for row in data:
+    title = 'Распределение затрат'
 
-        row['excess'] = row['reports'] > row['budgets']
+    pie = pie_plot(values, labels, title)
 
-        if row['is_positive']:
-            incomes_rows.append(row)
-            incomes_total_reports += row['reports']
-            incomes_total_budgets += row['budgets']
-        else:
-            expenses_rows.append(row)
-            expenses_total_reports += row['reports']
-            expenses_total_budgets += row['budgets']
-
-    total_reports = incomes_total_reports - expenses_total_reports
-    total_budgets = incomes_total_budgets - expenses_total_budgets
-
-    return {
-        'incomes_rows': incomes_rows,
-        'incomes_total_reports': incomes_total_reports,
-        'incomes_total_budgets': incomes_total_budgets,
-
-        'expenses_rows': expenses_rows,
-        'expenses_total_reports': expenses_total_reports,
-        'expenses_total_budgets': expenses_total_budgets,
-
-        'total_reports': total_reports,
-        'total_budgets': total_budgets,
-    }
+    return get_plot_html(pie, 500, 500)
 
 
 def fin_object_detalization(start_date: date,

@@ -1,4 +1,3 @@
-import calendar
 import datetime
 from typing import Dict
 
@@ -28,14 +27,14 @@ class IndexView(View):
 
 class FinanceObjectCreate(CreateView):
     model = FinanceObject
-    template_name = "finance/fin_object_form.html"
+    template_name = "finance/fin_object/form.html"
     fields = "__all__"
     success_url = reverse_lazy("objects-all")
 
 
 class FinanceObjectUpdate(UpdateView):
     model = FinanceObject
-    template_name = "finance/fin_object_form.html"
+    template_name = "finance/fin_object/form.html"
     fields = "__all__"
     success_url = reverse_lazy("objects-all")
 
@@ -47,17 +46,17 @@ class FinanceObjectUpdate(UpdateView):
 
 class FinanceObjectDelete(DeleteView):
     model = FinanceObject
-    template_name = "finance/fin_objects_list.html"
+    template_name = "finance/fin_object/list.html"
 
 
 class FinanceObjectList(ListView):
     model = FinanceObject
-    template_name = "finance/fin_objects_list.html"
+    template_name = "finance/fin_object/list.html"
 
 
 class DayReportView(CreateUpdateView):
     model = DayReport
-    template_name = "finance/day_report_form.html"
+    template_name = "finance/day_report/form.html"
     form_class = ReportForm
     success_url = reverse_lazy("day_reports-all")
 
@@ -107,12 +106,12 @@ class DayReportDelete(DeleteView):
 
 class DayReportList(ListView):
     model = DayReport
-    template_name = "finance/day_reports_list.html"
+    template_name = "finance/day_report/list.html"
 
 
 class BudgetView(CreateUpdateView):
     model = Budget
-    template_name = "finance/budget_form.html"
+    template_name = "finance/budget/form.html"
     form_class = BudgetForm
     success_url = reverse_lazy("budgets-all")
 
@@ -162,7 +161,7 @@ class BudgetDelete(DeleteView):
 
 class BudgetList(ListView):
     model = Budget
-    template_name = "finance/budgets_list.html"
+    template_name = "finance/budget/list.html"
 
 
 class ReportView(View):
