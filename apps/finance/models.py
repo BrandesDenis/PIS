@@ -22,6 +22,9 @@ class FinanceObject(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ('-is_positive', 'title')
+
 
 class DayReport(models.Model):
     date = models.DateField(default=date.today,

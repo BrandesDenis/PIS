@@ -1,4 +1,5 @@
 {%extends 'core/base.html' %}
+{% load static %}
 
 {% block page_title_block%}
 Объекты
@@ -16,15 +17,25 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col">title</th>
-            <th scope="col">type</th>
+            <th scope="col">Наименование</th>
+            <th scope="col">Доход</th>
+            <th scope="col">Описание</th>
         </tr>
     </thead>
     <tbody>
         {% for obj in object_list %}
         <tr>
             <td><a href="{%url 'objects-detail' obj.pk%}">{{obj.title}}</a></td>
-            <td>{{obj.object_type}}</td>
+            <td>
+            {%if obj.is_positive%}
+                <img width="20" height="20" src="{% static "core/check_little_black.png" %}" alt="Да">   
+            {%endif%}
+            </td>
+            <td>
+            {%if obj.need_description%}
+                <img width="20" height="20" src="{% static "core/check_little_black.png" %}" alt="Да">   
+            {%endif%}
+            </td>
         </tr>
         {% endfor %}
     </tbody>

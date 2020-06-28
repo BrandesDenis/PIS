@@ -46,7 +46,7 @@ class FinanceObjectUpdate(UpdateView):
 
 class FinanceObjectDelete(DeleteView):
     model = FinanceObject
-    template_name = "finance/fin_object/list.html"
+    success_url = reverse_lazy("objects-all")
 
 
 class FinanceObjectList(ListView):

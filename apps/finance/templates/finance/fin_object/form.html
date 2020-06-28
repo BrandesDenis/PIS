@@ -11,14 +11,17 @@
 {% block body_block%}
 <form method="post">
     {% csrf_token %}
+    <button class="btn btn-primary" type="submit">Сохранить</button>
+    <br>
+    <br>
     {{ form.as_p }}
-    <input type="submit" value="Save">
 </form>
 
 {%if is_update%}
-<form method="post" action="{%url 'objects-delete' object.pk %}">
+<form class="form-inline" method="post" action="{%url 'objects-delete' object.pk %}">
     {% csrf_token %}
-    <input type="submit" value="delete">
+    <button class="btn btn-primary" type="submit">Удалить</button>
 </form>
 {%endif%}
+
 {% endblock%}
