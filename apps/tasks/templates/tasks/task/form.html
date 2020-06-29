@@ -8,13 +8,13 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Save">
+    <input type="submit" value="Сохранить">
 </form>
 
 {%if is_update%}
 <form method="post" action = "{%url 'task-delete' object.pk %}">
     {% csrf_token %}
-    <input type="submit" value="delete">
+    <input type="submit" value="Удалить">
 </form>
 {%endif%}
 {% endblock%}

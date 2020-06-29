@@ -1,0 +1,36 @@
+{%extends 'core/base.html'%}
+
+{% block page_title_block%}
+Список задач
+{% endblock%}
+
+{% block body_block%}
+<br>
+<a href="{%url 'task-create'%}">Создать новую</a>
+<br>
+<br>
+<div class="btn-group btn-group-toggle" data-toggle="buttons">
+        <a class="btn btn-outline-primary{%if filter_status == '0'%} btn-lg active {%endif%}"  href="{%url 'task-all'%}?status=0" role="button">Незавершенные</a>
+        <a class="btn btn-outline-primary{%if not filter_status%} btn-lg active {%endif%}"  href="{%url 'task-all'%}" role="button">Все</a>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Дата завершения</th>
+            <th scope="col">Заголовок</th>
+            <th scope="col">Пункт</th>
+            <th scope="col">Статус</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in object_list %}
+        <tr>
+            <td>{{obj.end}}</td>
+            <td><a href="{%url 'task-detail' obj.pk%}">{{obj.title}}</a></td>
+            <td>{{obj.paragraph}}</td>
+            <td>{{obj.status}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock%}
