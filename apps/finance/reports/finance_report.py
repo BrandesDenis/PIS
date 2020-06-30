@@ -2,11 +2,8 @@ from typing import Dict, List
 from datetime import date
 from decimal import Decimal
 
-from django.db.models import Sum
-
 from apps.core.sql import Query
 from apps.core.plots import pie_plot, get_plot_html
-from apps.finance.models import FinanceObject, DayReportRow
 
 
 def finance_report(start_date: date, end_date: date) -> Dict:
@@ -114,20 +111,4 @@ def _expenses_distribution_plot(expenses_rows: List[Dict]) -> str:
 
     pie = pie_plot(values, labels, title)
 
-    return get_plot_html(pie, 500, 500)
-
-
-def fin_object_detalization(start_date: date,
-                            end_date: date,
-                            fin_object: FinanceObject) -> Dict:
-
-    report_rows = DayReportRow.objects.filter(fin_object=fin_object)\
-        .filter(date__range=(start_date, end_date))\
-        .values('date', 'total', 'report')
-
-    total = report_rows.aggregate(Sum('total')).get('total__sum', 0)
-
-    return {
-        'report_rows': report_rows,
-        'total': total,
-    }
+    return get_plot_html(pie, 480, 480)

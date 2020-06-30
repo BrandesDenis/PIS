@@ -17,7 +17,8 @@ from apps.finance.forms import (BudgetForm, BudgetRowForm,
                                 ReportForm, ReportRowForm)
 from apps.finance.models import (Budget, BudgetRow, DayReport, DayReportRow,
                                  FinanceObject, PeriodicReport)
-from apps.finance.reports import fin_object_detalization, finance_report
+from apps.finance.reports.fin_object_detalization import fin_object_detalization
+from apps.finance.reports.finance_report import finance_report
 
 
 class IndexView(View):
