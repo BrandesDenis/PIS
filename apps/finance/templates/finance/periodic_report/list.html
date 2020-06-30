@@ -1,4 +1,5 @@
 {%extends 'core/base.html' %}
+{% load core_extras %}
 
 {% block page_title_block%}
 Периодические отчеты
@@ -33,7 +34,7 @@
         {% for obj in object_list %}
         <tr>
             <td><a href="{%url 'periodic_reports-detail' obj.pk%}">{{obj.date}}</a></td>
-            <td>{{obj.report_type}}</td>
+            <td>{{obj|choice_field_display:"report_type"}}</td>
             <td>{{obj.p1}}</td>
             <td>{{obj.p13}}</td>
             <td>{{obj.p3}}</td>

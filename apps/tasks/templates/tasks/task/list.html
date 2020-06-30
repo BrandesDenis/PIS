@@ -1,4 +1,5 @@
 {%extends 'core/base.html'%}
+{% load core_extras %}
 
 {% block page_title_block%}
 Список задач
@@ -28,7 +29,7 @@
             <td>{{obj.end}}</td>
             <td><a href="{%url 'task-detail' obj.pk%}">{{obj.title}}</a></td>
             <td>{{obj.paragraph}}</td>
-            <td>{{obj.status}}</td>
+            <td>{{obj|choice_field_display:"status"}}</td>
         </tr>
         {% endfor %}
     </tbody>
