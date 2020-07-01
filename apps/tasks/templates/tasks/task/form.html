@@ -14,15 +14,9 @@
 </div>
 
 <br>
-{%if is_update%}
-<form id="delete_form" method="post" action = "{%url 'task-delete' object.pk %}">
-    {% csrf_token %}
-</form>
-{%endif%}
 
 <form id="post_form" method="post">
     {% csrf_token %}
-
     <div class="container-float-left">
         <div class="row">
             <div class="col-sm-1">
@@ -37,17 +31,22 @@
             </div>
         </div>
     </div>
-    <br>
     <div>
         {{form.start.label_tag}} {{form.start}}
         {{form.end.label_tag}} {{form.end}}
     </div>
-    <br>
+    <hr>
     <div>
         {{form.description.label_tag}}
         <br>        
         {{form.description}}
     </div>
 </form>
+
+{%if is_update%}
+<form id="delete_form" method="post" action = "{%url 'task-delete' object.pk %}">
+    {% csrf_token %}
+</form>
+{%endif%}
 
 {% endblock%}

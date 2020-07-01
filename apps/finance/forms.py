@@ -9,7 +9,11 @@ class ReportForm(forms.ModelForm):
         model = DayReport
         exclude = ["total"]
         widgets = {
-            'comment': forms.Textarea(attrs={'rows': 10, 'cols': 80}),
+            'comment': forms.Textarea(attrs={
+                'rows': 6,
+                'cols': 80,
+                'placeholder': 'Комментарий'
+            }),
         }
 
 
@@ -35,6 +39,13 @@ class PeriodicReportForm(forms.ModelForm):
     class Meta:
         model = PeriodicReport
         fields = '__all__'
+        widgets = {
+            'comment': forms.Textarea(attrs={
+                'rows': 6,
+                'cols': 80,
+                'placeholder': 'Комментарий'
+            }),
+        }
 
 
 class NewPeriodicReportForm(forms.Form):

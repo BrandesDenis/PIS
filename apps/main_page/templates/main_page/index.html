@@ -4,12 +4,7 @@
 Главная
 {% endblock%}
 {% block body_block%}
-<a href="{%url 'finance-index' %}">Финансы</a>
-<br>
-<br>
-<a href="{%url 'task-all' %}?status=0">Задачи</a>
-<br>
-<br>
-<a href="{%url 'thoughts-list' %}">Мысли</a>
-<br>
+<p><a href="{%url 'finance-index' %}">Финансы</a></p>
+<p><a href="{%url 'task-all' %}?status=0">Задачи</a></p>
+<p><a href="{%url 'thoughts-list' %}">Мысли</a></p>
 {% endblock%}

@@ -4,21 +4,15 @@
 Финансовый блок
 {% endblock%}
 
+{% block navigation_block %}<p><a href="{%url 'main-index' %}">На главную</a></p>{% endblock %}
+
 {% block body_block%}
-<br>
-<a href="{%url 'objects-all' %}">Объекты движений ДС</a>
-<br>
+
+<p><a href="{%url 'objects-all' %}">Объекты движений ДС</a></p>
 <hr>
-<br>
-<a href="{%url 'day_reports-all' %}">Ежедневные отчеты</a>
-<br>
-<br>
-<a href="{%url 'budgets-all' %}">Бюджеты</a>
-<br>
-<br>
-<a href="{%url 'periodic_reports-all' %}">Периодические отчеты</a>
-<br>
+<p><a href="{%url 'day_reports-all' %}">Ежедневные отчеты</a></p>
+<p><a href="{%url 'budgets-all' %}">Бюджеты</a></p>
+<p><a href="{%url 'periodic_reports-all' %}">Периодические отчеты</a></p>
 <hr>
-<br>
-<a href="{%url 'finance-report' %}">Отчет по ДС</a>
+<p><a href="{%url 'finance-report' %}">Отчет по ДС</a></p>
 {% endblock%}

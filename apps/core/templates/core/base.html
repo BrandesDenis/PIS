@@ -8,6 +8,7 @@
             background-color: powderblue;
             color: #FFF;
         }
+        {% block page_style_block %}{% endblock %}
     </style>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -18,7 +19,8 @@
 
 <body>
     <h5> {% block page_title_block %}  {% endblock %} </h5>
-    <h6> {% block navigation_block %} <a href="{%url 'main-index' %}">На главную</a> {% endblock %} </h6>
-    <br>
+    {% block navigation_block %}{% endblock %}
     {% block body_block %}{% endblock %}
 </body>
+
+{% block scripts_block %}{% endblock %}

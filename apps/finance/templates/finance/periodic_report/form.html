@@ -13,21 +13,42 @@
 {% endblock%}
 
 {% block body_block%}
-
-{%if is_update %}
-<form method="post" action="{%url 'periodic_reports-delete' object.pk %}">
+<p>
+    <div>
+        <input class="btn btn-primary" form="post_form" type="submit" value="Сохранить">
+        {%if is_update%}
+        <input class="btn btn-primary" form="delete_form" type="submit" value="Удалить">
+        {%endif%}
+    </div>
+</p>
+<form id="post_form" method="post">
     {% csrf_token %}
-    <input type="submit" value="Удалить">
+    <div class="container-float-left">
+        <div class="row">
+            <div class="col-sm-2">
+                <p>{{form.date.label_tag}}</p>
+                <p>{{form.p1.label_tag}}</p>
+                <p>{{form.p13.label_tag}}</p>
+                <p>{{form.p3.label_tag}}</p>
+                <p>{{form.p_union.label_tag}}</p>
+                <p>{{form.total.label_tag}}</p>
+            </div>
+            <div class="col-sm-10">
+                <p>{{form.date}}</p>
+                <p>{{form.p1}}</p>
+                <p>{{form.p13}}</p>
+                <p>{{form.p3}}</p>
+                <p>{{form.p_union}}</p>
+                <p>{{form.total}}</p>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <p>{{form.comment}}</p>
+</form>
+{%if is_update %}
+<form id="delete_form" method="post" action="{%url 'periodic_reports-delete' object.pk %}">
+    {% csrf_token %}
 </form>
 {%endif%}
-
-<form method="post">
-    {% csrf_token %}
-    <input type="submit" value="Сохранить">
-    <br>
-    <br>
-    {{ form.as_p }}
-    <br>
-</form>
-
 {% endblock%}

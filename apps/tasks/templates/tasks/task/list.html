@@ -5,8 +5,9 @@
 Список задач
 {% endblock%}
 
+{% block navigation_block %}<p><a href="{%url 'main-index' %}">На главную</a></p>{% endblock %}
+
 {% block body_block%}
-<br>
 <a href="{%url 'task-create'%}">Создать новую</a>
 <br>
 <br>
