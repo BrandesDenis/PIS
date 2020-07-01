@@ -2,7 +2,7 @@ from datetime import date
 from typing import Iterable, Tuple
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MaxValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Avg, Sum
 from django.http import QueryDict
@@ -33,7 +33,8 @@ class DayReport(models.Model):
     p1 = models.PositiveIntegerField(verbose_name='П1',
                                      validators=(MaxValueValidator(10),))
 
-    p13 = models.PositiveIntegerField(verbose_name='П13')
+    p13 = models.FloatField(verbose_name='П13',
+                            validators=(MinValueValidator(0),))
 
     p3 = models.PositiveIntegerField(verbose_name='П3',
                                      validators=(MaxValueValidator(10),))

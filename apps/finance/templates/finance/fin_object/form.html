@@ -9,18 +9,22 @@
 {% endblock%}
 
 {% block body_block%}
-<form method="post">
-    {% csrf_token %}
-    <button class="btn btn-primary" type="submit">Сохранить</button>
-    <br>
+<div>
+    <input class="btn btn-primary" form="post_form" type="submit" value="Сохранить">
+    {%if is_update%}
+    <input class="btn btn-primary" form="delete_form" type="submit" value="Удалить">
+    {%endif%}
+</div>
+
+<form id="post_form" method="post">
+    {% csrf_token %}    <br>
     <br>
     {{ form.as_p }}
 </form>
 
 {%if is_update%}
-<form class="form-inline" method="post" action="{%url 'objects-delete' object.pk %}">
+<form id="delete_form" method="post" action="{%url 'objects-delete' object.pk %}">
     {% csrf_token %}
-    <button class="btn btn-primary" type="submit">Удалить</button>
 </form>
 {%endif%}
 

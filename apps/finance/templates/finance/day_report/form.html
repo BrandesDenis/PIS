@@ -14,42 +14,69 @@
 
 {% block body_block%}
 
+<div>
+    <input class="btn btn-primary" form="post_form" type="submit" value="Сохранить">
+    {%if is_update%}
+    <input class="btn btn-primary" form="delete_form" type="submit" value="Удалить">
+    {%endif%}
+</div>
+
 {%if is_update %}
-<form method="post" action="{%url 'day_reports-delete' object.pk %}">
+<form id="delete_form" method="post" action="{%url 'day_reports-delete' object.pk %}">
     {% csrf_token %}
-    <input type="submit" value="Удалить">
 </form>
 {%endif%}
 
-<form method="post">
+<form id="post_form" method="post">
     {% csrf_token %}
-    <input type="submit" value="Сохранить">
     <br>
-    <br>
-    {{ form.as_p }}
-    <br>
-    <br>
-    <input type="button" value="row +" onClick="addRow()">
-    <input type="button" value="row -" onClick="removeRow()">
+    <div class="container-float-left">
+        <div class="row">
+            <div class="col-sm-5">
+                <div class="container-float-left">
+                    <div class="row">
+                        <div class="col-sm-1">
+                            <p>{{form.date.label_tag}}</p>
+                            <p>{{form.p1.label_tag}}</p>
+                            <p>{{form.p13.label_tag}}</p>
+                            <p>{{form.p3.label_tag}}</p>
+                            <p>{{form.p_union.label_tag}}</p>
+                        </div>
+                        <div class="col-sm-11">
+                            <p>{{form.date}}</p>
+                            <p>{{form.p1}}</p>
+                            <p>{{form.p13}}</p>
+                            <p>{{form.p3}}</p>
+                            <p>{{form.p_union}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-7">
+                <input type="button" value="row +" onClick="addRow()">
+                <input type="button" value="row -" onClick="removeRow()">
 
-    <table class="table" id="report_table">
-        <thead>
-            <tr>
-                <th scope="col">Статья</th>
-                <th scope="col">Сумма</th>
-                <th scope="col">Описание</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for row in rows %}
-            <tr onClick="selectRow(this)">
-                <td>{{row.fin_object}}</td>
-                <td>{{row.total}}</td>
-                <td>{{row.description}}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                <table class="table" id="report_table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Статья</th>
+                            <th scope="col">Сумма</th>
+                            <th scope="col">Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in rows %}
+                        <tr onClick="selectRow(this)">
+                            <td>{{row.fin_object}}</td>
+                            <td>{{row.total}}</td>
+                            <td>{{row.description}}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <script type="text/javascript">
 

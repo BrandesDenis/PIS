@@ -18,12 +18,13 @@ class Task(models.Model):
             (FAILED, 'Провалено'),
         )
 
-    title = models.CharField(unique=True, max_length=100)
-    paragraph = models.IntegerField(choices=PARAGRAPHS)
-    start = models.DateField(default=date.today)
-    end = models.DateField()
-    status = models.IntegerField(choices=TaskStatuses.choises, default=0)
-    description = models.TextField(blank=True)
+    title = models.CharField(unique=True, max_length=100, verbose_name='Заголовок')
+    paragraph = models.IntegerField(choices=PARAGRAPHS, verbose_name='Пункт')
+    start = models.DateField(default=date.today, verbose_name='Начало')
+    end = models.DateField(verbose_name='Окончание')
+    status = models.IntegerField(choices=TaskStatuses.choises,
+                                 default=0, verbose_name='Статус')
+    description = models.TextField(blank=True, verbose_name='Описание')
 
     class Meta:
         ordering = ["end", "title"]

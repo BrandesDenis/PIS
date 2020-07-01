@@ -9,18 +9,19 @@ from django.urls import reverse_lazy
 from django.db.models import QuerySet
 
 from apps.tasks.models import Task
+from apps.tasks.forms import TaskForm
 
 
 class TaskCreate(CreateView):
     model = Task
-    fields = "__all__"
+    form_class = TaskForm
     success_url = reverse_lazy("task-all")
     template_name = "tasks/task/form.html"
 
 
 class TaskUpdate(UpdateView):
     model = Task
-    fields = "__all__"
+    form_class = TaskForm
     success_url = reverse_lazy("task-all")
     template_name = "tasks/task/form.html"
 

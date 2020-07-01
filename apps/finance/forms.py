@@ -8,6 +8,9 @@ class ReportForm(forms.ModelForm):
     class Meta:
         model = DayReport
         exclude = ["total"]
+        widgets = {
+            'comment': forms.Textarea(attrs={'rows': 10, 'cols': 80}),
+        }
 
 
 class ReportRowForm(forms.ModelForm):
