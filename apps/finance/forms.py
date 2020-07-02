@@ -9,6 +9,9 @@ class ReportForm(forms.ModelForm):
         model = DayReport
         exclude = ["total"]
         widgets = {
+            'p13': forms.NumberInput(attrs={
+                'step': 0.5,
+            }),
             'comment': forms.Textarea(attrs={
                 'rows': 6,
                 'cols': 80,
