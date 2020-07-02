@@ -6,14 +6,14 @@
 {% endblock%}
 
 {% block navigation_block%}
-<p><a class="btn btn-primary" href="{%url 'finance-index' %}">Финансы</a></p>
+<p><a href="{%url 'finance-index' %}">Финансы</a></p>
 {% endblock%}
 
 {% block body_block%}
 
 <form action="{%url 'periodic_reports-create' %}" method="get">
     {{new_report_form.as_p}}
-    <input type="submit" value="Создать">
+    <input class="btn btn-primary" type="submit" value="Создать">
 <form>
 
 <br>

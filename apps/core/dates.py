@@ -1,24 +1,10 @@
 import math
 import calendar
-from typing import Iterable, Set
 from datetime import date, datetime, timedelta
-
-from django.http import QueryDict
 
 
 HTML_DATE_FORMAT = '%Y-%m-%d'
 PRETTY_DATE_FORMAT = '%d.%m.%Y'
-
-
-def collect_rows_from_request(request_data: QueryDict,
-                              columns: Iterable[str]) -> Iterable[Set]:
-
-    columns_data = []
-    for column in columns:
-        column_data = request_data.getlist(column)
-        columns_data.append(column_data)
-
-    return zip(*columns_data)
 
 
 def week_start(dt: date) -> date:

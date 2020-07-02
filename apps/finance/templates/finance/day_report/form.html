@@ -19,7 +19,6 @@
 {% endblock%}
 
 {% block body_block%}
-
 <form id="post_form" method="post">
     {% csrf_token %}
     <div class="container-float-left">
@@ -82,13 +81,11 @@
     <hr>
     <p>{{form.comment}}</p>
 </form>
-
 {%if is_update %}
 <form id="delete_form" method="post" action="{%url 'day_reports-delete' object.pk %}">
     {% csrf_token %}
 </form>
 {%endif%}
-
 {% endblock%}
 
 {% block scripts_block %}

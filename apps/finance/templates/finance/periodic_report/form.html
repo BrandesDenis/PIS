@@ -1,4 +1,11 @@
 {%extends 'core/base.html' %}
+{% load core_extras %}
+
+{% block page_style_block %}
+.table-responsive {
+    max-height:220px;
+}
+{% endblock %}
 
 {% block page_title_block%}
 {%if is_update %}
@@ -25,21 +32,47 @@
     {% csrf_token %}
     <div class="container-float-left">
         <div class="row">
-            <div class="col-sm-2">
-                <p>{{form.date.label_tag}}</p>
-                <p>{{form.p1.label_tag}}</p>
-                <p>{{form.p13.label_tag}}</p>
-                <p>{{form.p3.label_tag}}</p>
-                <p>{{form.p_union.label_tag}}</p>
-                <p>{{form.total.label_tag}}</p>
+            <div class="col-sm-4">
+                <div class="container-float-left">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <p>{{form.date.label_tag}}</p>
+                            <p>{{form.p1.label_tag}}</p>
+                            <p>{{form.p13.label_tag}}</p>
+                            <p>{{form.p3.label_tag}}</p>
+                            <p>{{form.p_union.label_tag}}</p>
+                            <p>{{form.total.label_tag}}</p>
+                        </div>
+                        <div class="col-sm-8">
+                            <p>{{form.date}}</p>
+                            <p>{{form.p1}}</p>
+                            <p>{{form.p13}}</p>
+                            <p>{{form.p3}}</p>
+                            <p>{{form.p_union}}</p>
+                            <p>{{form.total}}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-sm-10">
-                <p>{{form.date}}</p>
-                <p>{{form.p1}}</p>
-                <p>{{form.p13}}</p>
-                <p>{{form.p3}}</p>
-                <p>{{form.p_union}}</p>
-                <p>{{form.total}}</p>
+            <div class="col-sm-8">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Задача</th>
+                                <th scope="col">Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for task in tasks %}
+                            <tr>
+                                <td><a href="{%url 'task-detail' task.pk%}">{{task.title}}</a></td>
+                                <td>{{task|choice_field_display:"status"}}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

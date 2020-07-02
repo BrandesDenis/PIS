@@ -9,8 +9,10 @@ from django.views import View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from apps.core.utils import (date_from_html_format, date_pretty_format,
-                             html_date_format, month_end, month_start)
+from apps.core.dates import date_pretty_format, html_date_format
+
+from apps.core.collect_request_data import collect_start_end_dates_reports
+
 from apps.core.views import CreateUpdateView
 from apps.finance.forms import (BudgetForm, BudgetRowForm,
                                 NewPeriodicReportForm, PeriodicReportForm,
@@ -168,19 +170,7 @@ class BudgetList(ListView):
 class ReportView(View):
 
     def get(self, request: HttpRequest) -> HttpResponse:
-        today = datetime.date.today()
-
-        start_date_param = request.GET.get('start_date')
-        if start_date_param:
-            start_date = date_from_html_format(start_date_param)
-        else:
-            start_date = month_start(today)
-
-        end_date_param = request.GET.get('end_date')
-        if end_date_param:
-            end_date = date_from_html_format(end_date_param)
-        else:
-            end_date = month_end(today)
+        start_date, end_date = collect_start_end_dates_reports(request.GET)
 
         context = finance_report(start_date, end_date)
 
@@ -196,19 +186,7 @@ class FinObjectDetalizationReportView(View):
 
         fin_object = get_object_or_404(FinanceObject, pk=pk)
 
-        today = datetime.date.today()
-
-        start_date_param = request.GET.get('start_date')
-        if start_date_param:
-            start_date = date_from_html_format(start_date_param)
-        else:
-            start_date = month_start(today)
-
-        end_date_param = request.GET.get('end_date')
-        if end_date_param:
-            end_date = date_from_html_format(end_date_param)
-        else:
-            end_date = month_end(today)
+        start_date, end_date = collect_start_end_dates_reports(request.GET)
 
         context = fin_object_detalization(start_date, end_date, fin_object)
 
@@ -227,7 +205,7 @@ class PeriodicReportView(CreateUpdateView):
 
     def post(self,
              request: HttpRequest,
-             * args,
+             *args,
              **kwargs) -> HttpResponse:
 
         super().post(request, *args, **kwargs)
@@ -275,6 +253,8 @@ class PeriodicReportView(CreateUpdateView):
             self.object = new_report
 
             context = super().get_context_data(**kwargs)
+
+        context['tasks'] = self.object.get_reports_tasks()
 
         return context
 

@@ -9,15 +9,15 @@
 {% endblock%}
 
 {% block body_block%}
-<form method="get" action="{%url 'finance-report'%}">
-    <label for="id_start_date">Период с</label>
-    <input type="date" name="start_date" id="id_start_date" value="{{start_date}}">
-    <label for="id_end_date">по</label>
-    <input type="date" name="end_date" id="id_end_date" value="{{end_date}}">
-    <input type="submit" value="Обновить">
-</form>
-<br>
-
+<p>
+    <form method="get" action="{%url 'finance-report'%}">
+        <label for="id_start_date">Период с</label>
+        <input type="date" name="start_date" id="id_start_date" value="{{start_date}}">
+        <label for="id_end_date">по</label>
+        <input type="date" name="end_date" id="id_end_date" value="{{end_date}}">
+        <input type="submit" value="Обновить">
+    </form>
+</p>
 <div class="container-float-left">
     <div class="row">
         <div class="col-sm-7">

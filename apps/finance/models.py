@@ -1,15 +1,18 @@
-from datetime import date
+import datetime
 from typing import Iterable, Tuple
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg, Sum
-from django.http import QueryDict
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.http import QueryDict
 
-from apps.core import utils
+from apps.tasks.models import Task
+from apps.core.collect_request_data import collect_rows
+from apps.core.dates import (month_end, month_start, quarter_end,
+                             quarter_start, week_end, week_start)
 
 
 class FinanceObject(models.Model):
@@ -27,7 +30,7 @@ class FinanceObject(models.Model):
 
 
 class DayReport(models.Model):
-    date = models.DateField(default=date.today,
+    date = models.DateField(default=datetime.date.today,
                             unique=True,
                             verbose_name='Дата')
     p1 = models.PositiveIntegerField(verbose_name='П1',
@@ -98,7 +101,7 @@ class DayReportRow(models.Model):
 
         columns = ('fin_object', 'total', 'description')
         for fin_object_pk, total, description in \
-                utils.collect_rows_from_request(request_data, columns):
+                collect_rows(request_data, columns):
 
             try:
                 fin_object = FinanceObject.objects.get(pk=fin_object_pk)
@@ -129,7 +132,7 @@ class DayReportRow(models.Model):
 
 
 class Budget(models.Model):
-    date = models.DateField(default=date.today,
+    date = models.DateField(default=datetime.date.today,
                             unique=True,
                             verbose_name='Дата')
 
@@ -189,8 +192,8 @@ class BudgetRow(models.Model):
         total_outcome = 0.0
 
         columns = ('fin_object', 'total')
-        for fin_object_pk, total in utils.collect_rows_from_request(request_data,
-                                                                    columns):
+        for fin_object_pk, total in collect_rows(request_data,
+                                                 columns):
 
             try:
                 fin_object = FinanceObject.objects.get(pk=fin_object_pk)
@@ -236,7 +239,7 @@ class PeriodicReport(models.Model):
     report_type = models.IntegerField(choices=ReportTypes.choises,
                                       verbose_name='Тип отчета')
 
-    date = models.DateField(default=date.today,
+    date = models.DateField(default=datetime.date.today,
                             verbose_name='Дата')
 
     p1 = models.FloatField(verbose_name='П1',
@@ -265,25 +268,38 @@ class PeriodicReport(models.Model):
                 fields=['report_type', 'date'], name='unique report type'),
         ]
 
-    def collect_report_data(self):
+    def _get_report_period(self) -> Tuple[datetime.date]:
         if self.report_type == 0:
-            source = DayReport.objects
             period = (
-                utils.week_start(self.date),
-                utils.week_end(self.date),
+                week_start(self.date),
+                week_end(self.date),
             )
         elif self.report_type == 1:
-            source = PeriodicReport.objects.filter(report_type=0)
             period = (
-                utils.month_start(self.date),
-                utils.month_end(self.date),
+                month_start(self.date),
+                month_end(self.date),
             )
         else:
-            source = PeriodicReport.objects.filter(report_type=1)
             period = (
-                utils.quarter_start(self.date),
-                utils.quarter_end(self.date),
+                quarter_start(self.date),
+                quarter_end(self.date),
             )
+
+        return period
+
+    def _get_report_source(self) -> models.QuerySet:
+        if self.report_type == 0:
+            source = DayReport.objects
+        elif self.report_type == 1:
+            source = PeriodicReport.objects.filter(report_type=0)
+        else:
+            source = PeriodicReport.objects.filter(report_type=1)
+
+        return source
+
+    def collect_report_data(self):
+        source = self._get_report_source()
+        period = self._get_report_period()
 
         source = source.filter(date__range=period)
 
@@ -295,11 +311,17 @@ class PeriodicReport(models.Model):
             Sum('total'),
         )
 
-        self.p1 = aggregates.get('p1__avg', 0)
-        self.p13 = aggregates.get('p13__avg', 0)
-        self.p3 = aggregates.get('p3__avg', 0)
-        self.p_union = aggregates.get('p_union__avg', 0)
+        self.p1 = round(aggregates.get('p1__avg', 0), 2)
+        self.p13 = round(aggregates.get('p13__avg', 0), 2)
+        self.p3 = round(aggregates.get('p3__avg', 0), 2)
+        self.p_union = round(aggregates.get('p_union__avg', 0), 2)
         self.total = aggregates.get('total__sum', 0)
 
         comments_list = [report.comment for report in source]
         self.comment = '\n'.join(comments_list)
+
+    def get_reports_tasks(self):
+        period = self._get_report_period()
+
+        return Task.objects.filter(end__range=period)\
+            .exclude(status=Task.TaskStatuses.IN_PROGRESS).all()
