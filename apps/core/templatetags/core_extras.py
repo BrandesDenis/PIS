@@ -1,5 +1,9 @@
+from datetime import date
+
 from django import template
 from django.db.models import Model
+
+from apps.core.dates import date_pretty_format
 
 
 register = template.Library()
@@ -13,3 +17,8 @@ def choice_field_display(value: Model, field_name: str) -> str:
         res = ''
 
     return res
+
+
+@register.filter()
+def date_format(value: date) -> str:
+    return date_pretty_format(value)

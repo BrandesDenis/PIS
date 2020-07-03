@@ -1,10 +1,27 @@
 {%extends 'core/base.html'%}
+{% load core_extras%}
 
-{% block page_title_block%}
-Главная
-{% endblock%}
 {% block body_block%}
+<h5>Разделы</h5>
 <p><a href="{%url 'finance-index' %}">Финансы</a></p>
 <p><a href="{%url 'task-all' %}?status=0">Задачи</a></p>
 <p><a href="{%url 'thoughts-list' %}">Мысли</a></p>
+<hr>
+<h5>Напоминания</h5>
+<p>
+{%for reminder in report_reminders%}
+    Создать
+    {%if reminder.type == 'day_report'%}
+        <a href="{%url 'day_reports-create' %}?date={{reminder.date|date_format}}">дневной отчет</a>
+    {%elif reminder.type == 'budget'%}
+        <a href="{%url 'budgets-create' %}?date={{reminder.date|date_format}}">бюджет</a>
+    {%else%}
+        <a href="{%url 'periodic_reports-create' %}?date={{reminder.date|date_format}}&report_type={{reminder.type}}">периодический отчет</a> 
+    {%endif%}
+    за {{reminder.date|date_format}}
+    <br>
+{%endfor%}
+</p>
 {% endblock%}
+
+

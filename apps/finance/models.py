@@ -311,11 +311,11 @@ class PeriodicReport(models.Model):
             Sum('total'),
         )
 
-        self.p1 = round(aggregates.get('p1__avg', 0), 2)
-        self.p13 = round(aggregates.get('p13__avg', 0), 2)
-        self.p3 = round(aggregates.get('p3__avg', 0), 2)
-        self.p_union = round(aggregates.get('p_union__avg', 0), 2)
-        self.total = aggregates.get('total__sum', 0)
+        self.p1 = round(aggregates.get('p1__avg') or 0, 2)
+        self.p13 = round(aggregates.get('p13__avg') or 0, 2)
+        self.p3 = round(aggregates.get('p3__avg') or 0, 2)
+        self.p_union = round(aggregates.get('p_union__avg') or 0, 2)
+        self.total = aggregates.get('total__sum') or 0
 
         comments_list = [report.comment for report in source]
         self.comment = '\n'.join(comments_list)

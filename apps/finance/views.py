@@ -9,7 +9,7 @@ from django.views import View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from apps.core.dates import date_pretty_format, html_date_format
+from apps.core.dates import today, date_pretty_format, html_date_format
 
 from apps.core.collect_request_data import collect_start_end_dates_reports
 
@@ -97,6 +97,15 @@ class DayReportView(CreateUpdateView):
         else:
             rows = DayReportRow.get_default_rows()
 
+            report_date_param = self.request.GET.get('date')
+            if report_date_param:
+                report_date = datetime.datetime.strptime(report_date_param,
+                                                         '%d.%m.%Y').date()
+            else:
+                report_date = today()
+
+            context['form'].initial['date'] = date_pretty_format(report_date)
+
         context["rows"] = [ReportRowForm(instance=row) for row in rows]
 
         return context
@@ -151,6 +160,15 @@ class BudgetView(CreateUpdateView):
             rows = [row for row in self.object.rows.all()]
         else:
             rows = BudgetRow.get_default_rows()
+
+            report_date_param = self.request.GET.get('date')
+            if report_date_param:
+                report_date = datetime.datetime.strptime(report_date_param,
+                                                         '%d.%m.%Y').date()
+            else:
+                report_date = today()
+
+            context['form'].initial['date'] = date_pretty_format(report_date)
 
         context["rows"] = [ReportRowForm(instance=row) for row in rows]
 
@@ -242,7 +260,7 @@ class PeriodicReportView(CreateUpdateView):
                 report_date = datetime.datetime.strptime(report_date_param,
                                                          '%d.%m.%Y').date()
             else:
-                report_date = datetime.date.today()
+                report_date = today()
 
             new_report = self.model()
             new_report.report_type = report_type

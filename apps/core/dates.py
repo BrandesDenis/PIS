@@ -1,10 +1,19 @@
 import math
 import calendar
+import pytz
 from datetime import date, datetime, timedelta
+
+from django.conf import settings
 
 
 HTML_DATE_FORMAT = '%Y-%m-%d'
 PRETTY_DATE_FORMAT = '%d.%m.%Y'
+
+
+def today() -> date:
+    timezone = pytz.timezone(settings.TIME_ZONE)
+
+    return datetime.now(timezone).date()
 
 
 def week_start(dt: date) -> date:
@@ -29,7 +38,8 @@ def quarter_start(dt: date) -> date:
 
 
 def quarter_end(dt: date) -> date:
-    return quarter_start(dt).replace(month=dt.month+3) - timedelta(days=1)
+    quarter_start_ = quarter_start(dt)
+    return quarter_start_.replace(month=quarter_start_.month+3) - timedelta(days=1)
 
 
 def html_date_format(dt: date) -> str:
