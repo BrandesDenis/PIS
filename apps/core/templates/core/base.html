@@ -20,7 +20,29 @@
 
 <body>
     <h5> {% block page_title_block %}  {% endblock %} </h5>
-    {% block navigation_block %}{% endblock %}
+    
+    {% block navigation_block %}
+    <p>
+        <ul class="list-group list-group-horizontal">
+            <li class="list-group-item">
+                <a href="{%url 'main-index' %}">Главная</a>
+            </li>
+            <li class="list-group-item">
+                <a href="{%url 'finance-index' %}">Учет</a>
+            </li>
+            <li class="list-group-item">
+                <a href="{%url 'task-all' %}">Задачи</a>
+            </li>
+            <li class="list-group-item">
+                <a href="">Мысли</a>
+            </li>
+            <li class="list-group-item">
+                <a href="">Чтение</a>
+            </li>
+        </ul>
+    <p>
+    {% endblock %}
+    
     {% block body_block %}{% endblock %}
 </body>
 

@@ -2,10 +2,27 @@
 {% load core_extras%}
 
 {% block body_block%}
-<h5>Разделы</h5>
-<p><a href="{%url 'finance-index' %}">Финансы</a></p>
-<p><a href="{%url 'task-all' %}?status=0">Задачи</a></p>
-<p><a href="{%url 'thoughts-list' %}">Мысли</a></p>
+<h5>Задачи</h5>
+<p><a class="btn btn-primary" href="{%url 'task-create'%}">Создать</a></p>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Дата завершения</th>
+            <th scope="col">Заголовок</th>
+            <th scope="col">Пункт</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{task.end}}</td>
+            <td><a href="{%url 'task-detail' task.pk%}">{{task.title}}</a></td>
+            <td>{{ask.paragraph}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{%if report_reminders%}
 <hr>
 <h5>Напоминания</h5>
 <p>
@@ -22,6 +39,7 @@
     <br>
 {%endfor%}
 </p>
+{%endif%}
 {% endblock%}
 
 

@@ -305,14 +305,14 @@ class PeriodicReport(models.Model):
 
         aggregates = source.aggregate(
             Avg('p1'),
-            Avg('p13'),
+            Sum('p13'),
             Avg('p3'),
             Avg('p_union'),
             Sum('total'),
         )
 
         self.p1 = round(aggregates.get('p1__avg') or 0, 2)
-        self.p13 = round(aggregates.get('p13__avg') or 0, 2)
+        self.p13 = aggregates.get('p13__sum') or 0
         self.p3 = round(aggregates.get('p3__avg') or 0, 2)
         self.p_union = round(aggregates.get('p_union__avg') or 0, 2)
         self.total = aggregates.get('total__sum') or 0

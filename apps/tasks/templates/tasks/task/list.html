@@ -1,16 +1,8 @@
 {%extends 'core/base.html'%}
 {% load core_extras %}
 
-{% block page_title_block%}
-Список задач
-{% endblock%}
-
-{% block navigation_block %}<p><a href="{%url 'main-index' %}">На главную</a></p>{% endblock %}
-
 {% block body_block%}
-<a class="btn btn-primary" href="{%url 'task-create'%}">Создать</a>
-<br>
-<br>
+<p><a class="btn btn-primary" href="{%url 'task-create'%}">Создать</a></p>
 <div class="btn-group btn-group-toggle" data-toggle="buttons">
         <a class="btn btn-outline-primary{%if filter_status == '0'%} btn-lg active {%endif%}"  href="{%url 'task-all'%}?status=0" role="button">Незавершенные</a>
         <a class="btn btn-outline-primary{%if not filter_status%} btn-lg active {%endif%}"  href="{%url 'task-all'%}" role="button">Все</a>

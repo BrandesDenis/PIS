@@ -35,3 +35,7 @@ class Task(models.Model):
 
         self.status = status
         self.save()
+
+    @classmethod
+    def get_current_tasks(cls) -> models.QuerySet:
+        return Task.objects.filter(status=cls.TaskStatuses.IN_PROGRESS).all()
