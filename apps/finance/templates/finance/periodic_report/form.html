@@ -30,6 +30,7 @@
 </p>
 <form id="post_form" method="post">
     {% csrf_token %}
+    {{form.report_type.as_hidden}}
     <div class="container-float-left">
         <div class="row">
             <div class="col-sm-4">

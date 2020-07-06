@@ -2,6 +2,8 @@
 {% load core_extras%}
 
 {% block body_block%}
+<h5>Остаток ДС:{{finance_balance}} <a href="{%url 'finance-report'%}">Отчет</a></h5>
+<hr>
 <h5>Задачи</h5>
 <p><a class="btn btn-primary" href="{%url 'task-create'%}">Создать</a></p>
 <table class="table">
@@ -33,7 +35,7 @@
     {%elif reminder.type == 'budget'%}
         <a href="{%url 'budgets-create' %}?date={{reminder.date|date_format}}">бюджет</a>
     {%else%}
-        <a href="{%url 'periodic_reports-create' %}?date={{reminder.date|date_format}}&report_type={{reminder.type}}">периодический отчет</a> 
+        <a href="{%url 'periodic_reports-create' %}?date={{reminder.date|date_format}}&report_type={{reminder.report_type}}">периодический отчет</a> 
     {%endif%}
     за {{reminder.date|date_format}}
     <br>

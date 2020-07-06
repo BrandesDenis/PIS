@@ -23,7 +23,7 @@ class ReportForm(forms.ModelForm):
 class ReportRowForm(forms.ModelForm):
     class Meta:
         model = DayReportRow
-        fields = ["fin_object", "description", "total"]
+        fields = ["fin_object", "total"]
 
 
 class BudgetForm(forms.ModelForm):

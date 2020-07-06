@@ -1,12 +1,11 @@
 import datetime
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Optional
+from decimal import Decimal
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg, Sum
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.http import QueryDict
 
 from apps.tasks.models import Task
@@ -29,7 +28,87 @@ class FinanceObject(models.Model):
         ordering = ('-is_positive', 'title')
 
 
-class DayReport(models.Model):
+class FinanceDocument(models.Model):
+    total_income = models.DecimalField(default=0,
+                                       blank=True,
+                                       max_digits=15,
+                                       decimal_places=2)
+
+    total_outcome = models.DecimalField(default=0,
+                                        blank=True,
+                                        max_digits=15,
+                                        decimal_places=2)
+
+    total = models.DecimalField(default=0,
+                                blank=True,
+                                max_digits=15,
+                                decimal_places=2)
+
+    rows_added = models.BooleanField(default=False)
+
+    class Meta:
+        abstract = True
+
+
+class FinanceDocumentRow(models.Model):
+    document = models.ForeignKey(FinanceDocument,
+                                 related_name="rows",
+                                 on_delete=models.CASCADE)
+
+    date = models.DateField(null=True)
+
+    fin_object = models.ForeignKey(FinanceObject,
+                                   on_delete=models.PROTECT)
+
+    total = models.DecimalField(default=0,
+                                blank=True,
+                                max_digits=15,
+                                decimal_places=2)
+
+    additional_columns: Optional[Tuple[str]] = None
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def add_rows_from_request(cls,
+                              document: FinanceDocument,
+                              request_data: QueryDict) -> None:
+
+        document.rows.all().delete()
+
+        total_income = 0.0
+        total_outcome = 0.0
+
+        columns = ('fin_object', 'total')
+
+        for fin_object_pk, row_total in \
+                collect_rows(request_data, columns):
+
+            fin_object = FinanceObject.objects.get(pk=fin_object_pk)
+
+            row_total = float(row_total)
+
+            if fin_object.is_positive:
+                total_income += row_total
+            else:
+                total_outcome += row_total
+
+            cls(
+                document=document,
+                date=document.date,
+                fin_object=fin_object,
+                total=row_total,
+            ).save()
+
+        document.total_income = total_income
+        document.total_outcome = total_outcome
+        document.total = total_income - total_outcome
+        document.rows_added = True
+        document.save()
+
+
+class DayReport(FinanceDocument):
     date = models.DateField(default=datetime.date.today,
                             unique=True,
                             verbose_name='Дата')
@@ -44,11 +123,6 @@ class DayReport(models.Model):
     p_union = models.PositiveIntegerField(verbose_name='Общая оценка',
                                           validators=(MaxValueValidator(10),))
 
-    total = models.DecimalField(default=0,
-                                blank=True,
-                                max_digits=15,
-                                decimal_places=2)
-
     comment = models.TextField(blank=True, verbose_name='Комментарий')
 
     class Meta:
@@ -56,29 +130,18 @@ class DayReport(models.Model):
         ordering = ('date',)
 
 
-class DayReportRow(models.Model):
-    report = models.ForeignKey(DayReport,
-                               related_name="rows",
-                               on_delete=models.CASCADE)
+class DayReportRow(FinanceDocumentRow):
 
-    date = models.DateField(null=True)
+    document = models.ForeignKey(DayReport,
+                                 related_name="rows",
+                                 on_delete=models.CASCADE)
 
     fin_object = models.ForeignKey(FinanceObject,
-                                   related_name='reports',
+                                   related_name="report_rows",
                                    on_delete=models.PROTECT)
-    description = models.CharField(max_length=500, blank=True)
-    total = models.DecimalField(default=0,
-                                blank=True,
-                                max_digits=15,
-                                decimal_places=2)
-
-    @staticmethod
-    @receiver(pre_save, sender='finance.DayReportRow')
-    def set_row_date(sender, instance, *args, **kwargs):
-        instance.date = instance.report.date
 
     @classmethod
-    def get_default_rows(cls) -> Iterable['BudgetRow']:
+    def get_default_rows(cls) -> Iterable['DayReportRow']:
         default_row = cls()
 
         try:
@@ -90,48 +153,98 @@ class DayReportRow(models.Model):
 
         return [default_row]
 
+
+class FinanceRegister(models.Model):
+    month = models.DateField(default=datetime.date.today,
+                             unique=True,
+                             verbose_name='Месяц')
+
+    total = models.DecimalField(default=0,
+                                blank=True,
+                                max_digits=15,
+                                decimal_places=2)
+
+    balance = models.DecimalField(default=0,
+                                  blank=True,
+                                  max_digits=15,
+                                  decimal_places=2)
+
+    class Meta:
+        get_latest_by = 'month'
+        ordering = ('month',)
+
     @classmethod
-    def add_rows_from_request(cls, report: DayReport, request_data: QueryDict) -> Tuple:
-        errors = []
-        success = True
+    def calculate_month_balance(cls, date: datetime.date) -> None:
+        previous_month_balance = cls._get_month_balance(date)
 
-        report.rows.all().delete()
+        month_start_ = month_start(date)
+        month_end_ = month_end(date)
+        month_total = cls._get_range_operations_total(
+            month_start_, month_end_)
 
-        report_total = 0.0
+        if month_total:
+            month_balance = previous_month_balance + month_total
 
-        columns = ('fin_object', 'total', 'description')
-        for fin_object_pk, total, description in \
-                collect_rows(request_data, columns):
+            cls.objects.update_or_create(month=month_end_,
+                                         defaults={
+                                             'balance': month_balance,
+                                             'total': month_total,
+                                         })
 
-            try:
-                fin_object = FinanceObject.objects.get(pk=fin_object_pk)
-            except ObjectDoesNotExist:
-                errors.append(f'Не удалось найти fin_object с pk {fin_object_pk}')
-                success = False
-                break
+            cls._recalculate_next_months_balances(month_end_, month_balance)
 
-            total = float(total)
+    @classmethod
+    def recalculate_all(cls) -> None:
+        # cls.objects.all().delete()
+        pass
 
-            if fin_object.is_positive:
-                report_total += total
-            else:
-                report_total -= total
+    @classmethod
+    def _recalculate_next_months_balances(cls,
+                                          date: datetime.date,
+                                          start_balance: Decimal) -> None:
 
-            cls(
-                report=report,
-                fin_object=fin_object,
-                description=description,
-                total=total,
-            ).save()
+        balance = start_balance
+        next_months = cls.objects.filter(month__gt=date).all()
+        for month in next_months:
+            balance += month.total
+            month.balance = balance
+            month.save()
 
-        if success:
-            report.total = report_total
-            report.save()
+    @classmethod
+    def get_current_balance(cls) -> Decimal:
+        latest_month = cls.objects.latest()
 
-        return success, errors
+        return latest_month.balance if latest_month else Decimal(0)
+
+    @classmethod
+    def get_date_balance(cls, date: datetime.date) -> Decimal:
+        latest_balance = cls._get_latest_balance(date)
+
+        if date != month_end(date):
+            month_start_ = month_start(date)
+            range_total = cls._get_range_operations_total(month_start_, date)
+        else:
+            range_total = Decimal(0)
+
+        return latest_balance + range_total
+
+    @classmethod
+    def _get_latest_balance(cls, date: datetime.date) -> Decimal:
+        latest_month = cls.objects.filter(month__lte=date).order_by('-month').first()
+
+        return latest_month.balance if latest_month else Decimal(0)
+
+    @classmethod
+    def _get_range_operations_total(cls,
+                                    start_date: datetime.date,
+                                    end_date: datetime.date) -> Decimal:
+
+        return DayReport.objects\
+            .filter(date__range=(start_date, end_date))\
+            .aggregate(Sum('total')).get('total__sum') or Decimal(0)
 
 
-class Budget(models.Model):
+class Budget(FinanceDocument):
     date = models.DateField(default=datetime.date.today,
                             unique=True,
                             verbose_name='Дата')
@@ -146,29 +259,25 @@ class Budget(models.Model):
                                         max_digits=15,
                                         decimal_places=2)
 
-    class Meta:
-        get_latest_by = 'date'
-        ordering = ('date',)
-
-
-class BudgetRow(models.Model):
-    budget = models.ForeignKey(Budget, related_name="rows",
-                               on_delete=models.CASCADE)
-
-    date = models.DateField(null=True)
-
-    fin_object = models.ForeignKey(FinanceObject,
-                                   related_name='budgets',
-                                   on_delete=models.PROTECT)
     total = models.DecimalField(default=0,
                                 blank=True,
                                 max_digits=15,
                                 decimal_places=2)
 
-    @staticmethod
-    @receiver(pre_save, sender='finance.BudgetRow')
-    def set_row_date(sender, instance, *args, **kwargs):
-        instance.date = instance.budget.date
+    class Meta:
+        get_latest_by = 'date'
+        ordering = ('date',)
+
+
+class BudgetRow(FinanceDocumentRow):
+
+    document = models.ForeignKey(Budget,
+                                 related_name="rows",
+                                 on_delete=models.CASCADE)
+
+    fin_object = models.ForeignKey(FinanceObject,
+                                   related_name="budget_rows",
+                                   on_delete=models.PROTECT)
 
     @classmethod
     def get_default_rows(cls) -> Iterable['BudgetRow']:
@@ -179,48 +288,6 @@ class BudgetRow(models.Model):
             rows = tuple()
 
         return rows
-
-    @classmethod
-    def add_rows_from_request(cls, budget: Budget, request_data: QueryDict) -> Tuple:
-
-        errors = []
-        success = True
-
-        budget.rows.all().delete()
-
-        total_income = 0.0
-        total_outcome = 0.0
-
-        columns = ('fin_object', 'total')
-        for fin_object_pk, total in collect_rows(request_data,
-                                                 columns):
-
-            try:
-                fin_object = FinanceObject.objects.get(pk=fin_object_pk)
-            except ObjectDoesNotExist:
-                errors.append(f'Не удалось найти fin_object с pk {fin_object_pk}')
-                success = False
-                break
-
-            total = float(total)
-
-            if fin_object.is_positive:
-                total_income += total
-            else:
-                total_outcome += total
-
-            cls(
-                budget=budget,
-                fin_object=fin_object,
-                total=total,
-            ).save()
-
-        if success:
-            budget.total_income = total_income
-            budget.total_outcome = total_outcome
-            budget.save()
-
-        return success, errors
 
 
 class PeriodicReport(models.Model):
@@ -253,6 +320,7 @@ class PeriodicReport(models.Model):
                                 validators=(MaxValueValidator(10.0),))
 
     total = models.DecimalField(default=0,
+                                verbose_name='Итог ДС',
                                 blank=True,
                                 max_digits=15,
                                 decimal_places=2)

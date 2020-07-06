@@ -1,12 +1,17 @@
 from typing import Dict, List
 from datetime import date
 from decimal import Decimal
+from datetime import timedelta
 
 from apps.core.sql import Query
+from apps.finance.models import FinanceRegister
 from apps.core.plots import pie_plot, get_plot_html
 
 
 def finance_report(start_date: date, end_date: date) -> Dict:
+    # баланс для начала периода - это баланс на конец пред. дня
+    start_balance = FinanceRegister.get_date_balance(start_date - timedelta(days=1))
+    end_balance = FinanceRegister.get_date_balance(end_date)
 
     incomes_rows = []
     expenses_rows = []
@@ -17,10 +22,9 @@ def finance_report(start_date: date, end_date: date) -> Dict:
     expenses_total_reports = Decimal('0.0')
     expenses_total_budgets = Decimal('0.0')
 
-    data = _finance_report_data(start_date, end_date)
+    transactions_data = _finance_report_period_transactions(start_date, end_date)
 
-    for row in data:
-
+    for row in transactions_data:
         row['excess'] = row['reports'] > row['budgets']
 
         if row['is_positive']:
@@ -38,6 +42,9 @@ def finance_report(start_date: date, end_date: date) -> Dict:
     distribution_plot = _expenses_distribution_plot(expenses_rows)
 
     return {
+        'start_balance': start_balance,
+        'end_balance': end_balance,
+
         'incomes_rows': incomes_rows,
         'incomes_total_reports': incomes_total_reports,
         'incomes_total_budgets': incomes_total_budgets,
@@ -53,7 +60,7 @@ def finance_report(start_date: date, end_date: date) -> Dict:
     }
 
 
-def _finance_report_data(start_date: date, end_date: date) -> List:
+def _finance_report_period_transactions(start_date: date, end_date: date) -> List:
     query_text = '''
         SELECT
             finance_financeobject.id as fin_object_pk,

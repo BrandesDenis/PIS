@@ -73,7 +73,7 @@ class DayReportView(CreateUpdateView):
         success = form.is_valid()
         if success:
             report = form.save()
-            success, errors = DayReportRow.add_rows_from_request(report, request.POST)
+            DayReportRow.add_rows_from_request(report, request.POST)
         else:
             for _, error_list in form.errors.items():
                 for error in error_list:
@@ -137,7 +137,7 @@ class BudgetView(CreateUpdateView):
         success = form.is_valid()
         if success:
             budget = form.save()
-            success, errors = BudgetRow.add_rows_from_request(budget, request.POST)
+            BudgetRow.add_rows_from_request(budget, request.POST)
         else:
             for _, error_list in form.errors.items():
                 for error in error_list:
