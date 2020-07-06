@@ -175,7 +175,9 @@ class FinanceRegister(models.Model):
 
     @classmethod
     def calculate_month_balance(cls, date: datetime.date) -> None:
-        previous_month_balance = cls._get_month_balance(date)
+        # -1 день чтобы в последний день месяца не получить его же баланс
+        previous_month_balance = cls._get_latest_balance(
+            date-datetime.timedelta(days=1))
 
         month_start_ = month_start(date)
         month_end_ = month_end(date)
