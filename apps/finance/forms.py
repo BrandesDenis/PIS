@@ -7,7 +7,7 @@ from apps.finance.models import (Budget, BudgetRow, DayReport, DayReportRow,
 class ReportForm(forms.ModelForm):
     class Meta:
         model = DayReport
-        exclude = ["total"]
+        exclude = ["total", "total_income", "total_outcome", "rows_added"]
         widgets = {
             'p13': forms.NumberInput(attrs={
                 'step': 0.5,
@@ -29,7 +29,7 @@ class ReportRowForm(forms.ModelForm):
 class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
-        exclude = ["total_income", "total_outcome"]
+        exclude = ["total", "total_income", "total_outcome", "rows_added"]
 
 
 class BudgetRowForm(forms.ModelForm):
