@@ -1,3 +1,4 @@
+from typing import List, Dict
 from datetime import date
 
 from django.db import models
@@ -37,5 +38,16 @@ class Task(models.Model):
         self.save()
 
     @classmethod
-    def get_current_tasks(cls) -> models.QuerySet:
-        return Task.objects.filter(status=cls.TaskStatuses.IN_PROGRESS).all()
+    def get_current_tasks(cls) -> List[Dict]:
+        tasks = []
+        today = date.today()
+        for task in Task.objects\
+                .filter(status=cls.TaskStatuses.IN_PROGRESS).all():
+            expired = task.end <= today
+
+            tasks.append({
+                'task': task,
+                'expired': expired,
+            })
+
+        return tasks

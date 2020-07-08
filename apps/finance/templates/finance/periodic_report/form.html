@@ -30,6 +30,9 @@
 </p>
 <form id="post_form" method="post">
     {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
     {{form.report_type.as_hidden}}
     <div class="container-float-left">
         <div class="row">
@@ -83,6 +86,9 @@
 {%if is_update %}
 <form id="delete_form" method="post" action="{%url 'periodic_reports-delete' object.pk %}">
     {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
 </form>
 {%endif%}
 {% endblock%}

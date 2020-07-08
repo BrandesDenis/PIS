@@ -17,6 +17,7 @@ class IndexView(View):
             'finance_balance': finance_balance,
             'report_reminders': report_reminders,
             'tasks': tasks,
+            'request': request,
         }
 
         return render(request, "main_page/index.html", context)

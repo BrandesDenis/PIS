@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  pis_web:
+    build:
+      context: .
+      dockerfile: dockerfile
+    environment:
+      - DATABASE_URL
+    command: python3 manage.py runserver 0.0.0.0:8000
+    hostname: web
+    ports:
+      - "8000:8000"

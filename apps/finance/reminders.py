@@ -3,7 +3,7 @@ from datetime import date, timedelta
 
 
 from apps.finance.models import DayReport, PeriodicReport, Budget
-from apps.core.dates import today, week_end, month_end, quarter_end
+from apps.core.dates import now, today, week_end, month_end, quarter_end
 
 
 REMINDERS_START = date(day=1, month=7, year=2020)
@@ -14,7 +14,6 @@ def get_finance_reminders() -> List[Dict[str, date]]:
     reminders = []
 
     start_date = _get_start_date()
-    today_date = today()
 
     day_report_dates = DayReport.objects\
         .filter(date__gte=start_date)\
@@ -54,7 +53,10 @@ def get_finance_reminders() -> List[Dict[str, date]]:
     quarter_report_dates_iteration = True
     budget_dates_iteration = True
 
-    while check_date <= today_date:
+    today_date = today()
+    end_date = today_date if now().hour > 20 else today_date - day_delta
+
+    while check_date <= end_date:
         try:
             day_report_date = day_report_dates[day_report_index].get('date')
         except IndexError:
@@ -110,7 +112,8 @@ def get_finance_reminders() -> List[Dict[str, date]]:
 
         if check_date == quarter_end(check_date):
             try:
-                quarter_report_date = quarter_report_dates[quarter_report_index].get('date')
+                quarter_report_date = quarter_report_dates[quarter_report_index].get(
+                    'date')
             except IndexError:
                 quarter_report_dates_iteration = False
 

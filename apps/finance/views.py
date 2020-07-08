@@ -9,17 +9,16 @@ from django.views import View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from apps.core.dates import today, date_pretty_format, html_date_format
-
 from apps.core.collect_request_data import collect_start_end_dates_reports
-
-from apps.core.views import CreateUpdateView
+from apps.core.dates import date_pretty_format, html_date_format, today
+from apps.core.views import CreateUpdateView, NextRedirectMixin
 from apps.finance.forms import (BudgetForm, BudgetRowForm,
                                 NewPeriodicReportForm, PeriodicReportForm,
                                 ReportForm, ReportRowForm)
 from apps.finance.models import (Budget, BudgetRow, DayReport, DayReportRow,
                                  FinanceObject, PeriodicReport)
-from apps.finance.reports.fin_object_detalization import fin_object_detalization
+from apps.finance.reports.fin_object_detalization import \
+    fin_object_detalization
 from apps.finance.reports.finance_report import finance_report
 
 
@@ -57,7 +56,7 @@ class FinanceObjectList(ListView):
     template_name = "finance/fin_object/list.html"
 
 
-class DayReportView(CreateUpdateView):
+class DayReportView(NextRedirectMixin, CreateUpdateView):
     model = DayReport
     template_name = "finance/day_report/form.html"
     form_class = ReportForm
@@ -111,7 +110,7 @@ class DayReportView(CreateUpdateView):
         return context
 
 
-class DayReportDelete(DeleteView):
+class DayReportDelete(NextRedirectMixin, DeleteView):
     model = DayReport
     success_url = reverse_lazy("day_reports-all")
 
@@ -121,7 +120,7 @@ class DayReportList(ListView):
     template_name = "finance/day_report/list.html"
 
 
-class BudgetView(CreateUpdateView):
+class BudgetView(NextRedirectMixin, CreateUpdateView):
     model = Budget
     template_name = "finance/budget/form.html"
     form_class = BudgetForm
@@ -175,7 +174,7 @@ class BudgetView(CreateUpdateView):
         return context
 
 
-class BudgetDelete(DeleteView):
+class BudgetDelete(NextRedirectMixin, DeleteView):
     model = Budget
     success_url = reverse_lazy("budgets-all")
 
@@ -215,7 +214,7 @@ class FinObjectDetalizationReportView(View):
         return render(request, "finance/reports/fin_object_detalization.html", context)
 
 
-class PeriodicReportView(CreateUpdateView):
+class PeriodicReportView(NextRedirectMixin, CreateUpdateView):
     model = PeriodicReport
     template_name = "finance/periodic_report/form.html"
     form_class = PeriodicReportForm
@@ -277,7 +276,7 @@ class PeriodicReportView(CreateUpdateView):
         return context
 
 
-class PeriodicReportDelete(DeleteView):
+class PeriodicReportDelete(NextRedirectMixin, DeleteView):
     model = PeriodicReport
     success_url = reverse_lazy("periodic_reports-all")
 

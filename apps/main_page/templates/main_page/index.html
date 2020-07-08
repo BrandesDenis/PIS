@@ -1,29 +1,43 @@
 {%extends 'core/base.html'%}
+{% load static %}
 {% load core_extras%}
+
+{% block page_style_block %}
+.table-responsive {
+    max-height:280px;
+}
+{% endblock %}
 
 {% block body_block%}
 <h5>Остаток ДС:{{finance_balance}} <a href="{%url 'finance-report'%}">Отчет</a></h5>
 <hr>
 <h5>Задачи</h5>
-<p><a class="btn btn-primary" href="{%url 'task-create'%}">Создать</a></p>
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Дата завершения</th>
-            <th scope="col">Заголовок</th>
-            <th scope="col">Пункт</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for task in tasks %}
-        <tr>
-            <td>{{task.end}}</td>
-            <td><a href="{%url 'task-detail' task.pk%}">{{task.title}}</a></td>
-            <td>{{task.paragraph}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<p><a class="btn btn-primary" href="{%url 'task-create'%}?next={{request.get_full_path}}">Создать</a></p>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Дата завершения</th>
+                <th scope="col">Заголовок</th>
+                <th scope="col">Пункт</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task_row in tasks %}
+            <tr>
+                <td>
+                    {{task_row.task.end}}
+                    {%if task_row.expired%}
+                        <img width="20" height="20" src="{% static "core/attention.png" %}" alt="Да">
+                    {%endif%}
+                </td>
+                <td><a href="{%url 'task-detail' task_row.task.pk%}?next={{request.get_full_path}}">{{task_row.task.title}}</a></td>
+                <td>{{task_row.task.paragraph}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {%if report_reminders%}
 <hr>
 <h5>Напоминания</h5>

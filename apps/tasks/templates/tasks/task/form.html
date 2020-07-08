@@ -19,6 +19,9 @@
 </p>
 <form id="post_form" method="post">
     {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
     <div class="container-float-left">
         <div class="row">
             <div class="col-sm-1">
@@ -48,6 +51,9 @@
 {%if is_update%}
 <form id="delete_form" method="post" action = "{%url 'task-delete' object.pk %}">
     {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
 </form>
 {%endif%}
 

@@ -10,10 +10,14 @@ HTML_DATE_FORMAT = '%Y-%m-%d'
 PRETTY_DATE_FORMAT = '%d.%m.%Y'
 
 
-def today() -> date:
+def now() -> datetime:
     timezone = pytz.timezone(settings.TIME_ZONE)
 
-    return datetime.now(timezone).date()
+    return datetime.now(timezone)
+
+
+def today() -> date:
+    return now().date()
 
 
 def week_start(dt: date) -> date:

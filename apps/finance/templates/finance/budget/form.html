@@ -29,6 +29,9 @@
 </p>
 <form id="post_form" method="post">
     {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
     {{ form.as_p }}
     <input type="button" value="Добавить" onClick="addRow()">
     <input type="button" value="Удалить" onClick="removeRow()">
@@ -54,6 +57,9 @@
 {%if is_update %}
 <form id="delete_form" method="post" action="{%url 'budgets-delete' object.pk %}">
     {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
 </form>
 {%endif%}
 {% endblock%}
