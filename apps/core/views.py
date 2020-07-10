@@ -1,4 +1,3 @@
-import json
 from typing import Optional, Dict
 
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
@@ -7,7 +6,9 @@ from django.http import HttpRequest, HttpResponse
 from django.db.models import Model
 
 
-class CreateUpdateView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
+class CreateUpdateView(SingleObjectTemplateResponseMixin,
+                       ModelFormMixin,
+                       ProcessFormView):
     def get_object(self, queryset=None) -> Optional[Model]:
         try:
             return super().get_object(queryset)

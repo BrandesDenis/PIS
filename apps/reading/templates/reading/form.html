@@ -1,0 +1,58 @@
+{%extends 'core/base.html'%}
+
+{% block page_title_block%}
+Чтение
+{% endblock%}
+
+{% block navigation_block%}
+<a href="{%url 'reading-list' %}">Список</a>
+{% endblock%}
+
+{% block body_block%}
+<p>
+    <div>
+        <input class="btn btn-primary" form="post_form" type="submit" value="Сохранить">
+        {%if is_update%}
+        <input class="btn btn-primary" form="delete_form" type="submit" value="Удалить">
+        {%endif%}
+    </div>
+</p>
+<form id="post_form" method="post">
+    {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
+    <div class="container-float-left">
+        <div class="row">
+            <div class="col-sm-1">
+                <p>{{form.title.label_tag}}</p>
+                <p>{{form.autor.label_tag}}</p>
+            </div>
+            <div class="col-sm-11">
+                <p>{{form.title}}</p>
+                <p>{{form.autor}}</p>
+            </div>
+        </div>
+    </div>
+    <div>
+        {{form.start.label_tag}} {{form.start}}
+        {{form.end.label_tag}} {{form.end}}
+    </div>
+    <hr>
+    <div>
+        {{form.description.label_tag}}
+        <br>        
+        {{form.description}}
+    </div>
+</form>
+
+{%if is_update%}
+<form id="delete_form" method="post" action = "{%url 'reading-delete' object.pk %}">
+    {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
+</form>
+{%endif%}
+
+{% endblock%}

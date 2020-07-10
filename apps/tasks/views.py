@@ -1,8 +1,5 @@
 from typing import Dict
 
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import reverse, get_object_or_404
-from django.views import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
