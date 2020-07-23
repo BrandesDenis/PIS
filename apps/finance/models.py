@@ -123,6 +123,8 @@ class DayReport(FinanceDocument):
     p_union = models.PositiveIntegerField(verbose_name='Общая оценка',
                                           validators=(MaxValueValidator(10),))
 
+    train = models.BooleanField(default=False, verbose_name='Тренировка')
+
     comment = models.TextField(blank=True, verbose_name='Комментарий')
 
     class Meta:
@@ -326,6 +328,8 @@ class PeriodicReport(models.Model):
                                 blank=True,
                                 max_digits=15,
                                 decimal_places=2)
+
+    trains = models.PositiveIntegerField(verbose_name='Тренировок')
 
     comment = models.TextField(blank=True, verbose_name='Комментарий')
 
