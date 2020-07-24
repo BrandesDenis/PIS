@@ -23,7 +23,13 @@ class ReportForm(forms.ModelForm):
 class ReportRowForm(forms.ModelForm):
     class Meta:
         model = DayReportRow
-        fields = ["fin_object", "total"]
+        fields = ["fin_object", "total", "description"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fin_object = cleaned_data.get('fin_object')
+        if fin_object.need_description and not cleaned_data.get('description'):
+            self.add_error('description', f'Для {fin_object} необходимо указать описание')
 
 
 class BudgetForm(forms.ModelForm):
@@ -35,7 +41,7 @@ class BudgetForm(forms.ModelForm):
 class BudgetRowForm(forms.ModelForm):
     class Meta:
         model = BudgetRow
-        fields = ["fin_object", "total"]
+        fields = ["fin_object", "total", "description"]
 
 
 class PeriodicReportForm(forms.ModelForm):

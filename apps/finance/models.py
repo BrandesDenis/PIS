@@ -60,12 +60,12 @@ class FinanceDocumentRow(models.Model):
     fin_object = models.ForeignKey(FinanceObject,
                                    on_delete=models.PROTECT)
 
+    description = models.CharField(max_length=100, null=True)
+
     total = models.DecimalField(default=0,
                                 blank=True,
                                 max_digits=15,
                                 decimal_places=2)
-
-    additional_columns: Optional[Tuple[str]] = None
 
     class Meta:
         abstract = True
@@ -80,9 +80,9 @@ class FinanceDocumentRow(models.Model):
         total_income = 0.0
         total_outcome = 0.0
 
-        columns = ('fin_object', 'total')
+        columns = ('fin_object', 'total', 'description')
 
-        for fin_object_pk, row_total in \
+        for fin_object_pk, row_total, row_description in \
                 collect_rows(request_data, columns):
 
             fin_object = FinanceObject.objects.get(pk=fin_object_pk)
@@ -98,6 +98,7 @@ class FinanceDocumentRow(models.Model):
                 document=document,
                 date=document.date,
                 fin_object=fin_object,
+                row_description=row_description,
                 total=row_total,
             ).save()
 

@@ -48,6 +48,7 @@
                 <tr onClick="selectRow(this)">
                     <td>{{row.fin_object}}</td>
                     <td>{{row.total}}</td>
+                    <td>{{row.description}}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -72,6 +73,7 @@
     var rowTemplate = `
         <td>{{row_form.fin_object}}</td>
         <td>{{row_form.total}}</td>
+        <td>{{row_form.description}}</td>
     `
     function selectRow(row) {
         activeRows = tableRef.getElementsByClassName('selected');
