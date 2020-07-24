@@ -21,6 +21,8 @@ class FinanceObject(models.Model):
     need_description = models.BooleanField(default=False,
                                            verbose_name='Требуется указывать описание')
 
+    archive = models.BooleanField(default=False, verbose_name='Архиваная')
+
     def __str__(self):
         return self.title
 

@@ -1,7 +1,20 @@
 from django import forms
 
 from apps.finance.models import (Budget, BudgetRow, DayReport, DayReportRow,
-                                 PeriodicReport)
+                                 PeriodicReport, FinanceObject)
+
+
+class FinanceRowForm(forms.ModelForm):
+    fin_object = forms.ModelMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple,
+        queryset=FinanceObject.objects.filter(archive=False).all()
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fin_object = cleaned_data.get('fin_object')
+        if fin_object.need_description and not cleaned_data.get('description'):
+            self.add_error('description', f'Для {fin_object} необходимо указать описание')
 
 
 class ReportForm(forms.ModelForm):
@@ -20,16 +33,10 @@ class ReportForm(forms.ModelForm):
         }
 
 
-class ReportRowForm(forms.ModelForm):
+class ReportRowForm(FinanceRowForm):
     class Meta:
         model = DayReportRow
-        fields = ["fin_object", "total", "description"]
-
-    def clean(self):
-        cleaned_data = super().clean()
-        fin_object = cleaned_data.get('fin_object')
-        if fin_object.need_description and not cleaned_data.get('description'):
-            self.add_error('description', f'Для {fin_object} необходимо указать описание')
+        fields = ["total", "description"]
 
 
 class BudgetForm(forms.ModelForm):
@@ -38,10 +45,10 @@ class BudgetForm(forms.ModelForm):
         exclude = ["total", "total_income", "total_outcome", "rows_added"]
 
 
-class BudgetRowForm(forms.ModelForm):
+class BudgetRowForm(FinanceRowForm):
     class Meta:
         model = BudgetRow
-        fields = ["fin_object", "total", "description"]
+        fields = ["total", "description"]
 
 
 class PeriodicReportForm(forms.ModelForm):
