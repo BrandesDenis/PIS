@@ -62,7 +62,7 @@ class FinanceDocumentRow(models.Model):
     fin_object = models.ForeignKey(FinanceObject,
                                    on_delete=models.PROTECT)
 
-    description = models.CharField(max_length=100, null=True)
+    description = models.CharField(max_length=100, blank=True, null=True)
 
     total = models.DecimalField(default=0,
                                 blank=True,
@@ -100,7 +100,7 @@ class FinanceDocumentRow(models.Model):
                 document=document,
                 date=document.date,
                 fin_object=fin_object,
-                row_description=row_description,
+                description=row_description,
                 total=row_total,
             ).save()
 
@@ -332,7 +332,7 @@ class PeriodicReport(models.Model):
                                 max_digits=15,
                                 decimal_places=2)
 
-    trains = models.PositiveIntegerField(verbose_name='Тренировок')
+    trains = models.PositiveIntegerField(default=0, verbose_name='Тренировок')
 
     comment = models.TextField(blank=True, verbose_name='Комментарий')
 

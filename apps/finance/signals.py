@@ -22,7 +22,8 @@ def calculate_balance_post_delete(sender,
     FinanceRegister.calculate_month_balance(instance.date)
 
 
-@receiver(pre_save, sender='finance.FinanceDocumentRow')
+@receiver(pre_save, sender='finance.DayReportRow')
+@receiver(pre_save, sender='finance.BudgetRow')
 def check_description(sender,
                       instance: FinanceDocumentRow,
                       *args,
