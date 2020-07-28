@@ -5,9 +5,8 @@ from apps.finance.models import (Budget, BudgetRow, DayReport, DayReportRow,
 
 
 class FinanceRowForm(forms.ModelForm):
-    fin_object = forms.ModelMultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple,
-        queryset=FinanceObject.objects.filter(archive=False).all()
+    fin_object = forms.ModelChoiceField(
+        queryset=FinanceObject.objects.filter(archive=False).all(),
     )
 
     def clean(self):
@@ -36,7 +35,7 @@ class ReportForm(forms.ModelForm):
 class ReportRowForm(FinanceRowForm):
     class Meta:
         model = DayReportRow
-        fields = ["total", "description"]
+        fields = ['fin_object', "total", "description"]
 
 
 class BudgetForm(forms.ModelForm):
@@ -48,7 +47,7 @@ class BudgetForm(forms.ModelForm):
 class BudgetRowForm(FinanceRowForm):
     class Meta:
         model = BudgetRow
-        fields = ["total", "description"]
+        fields = ['fin_object', "total", "description"]
 
 
 class PeriodicReportForm(forms.ModelForm):

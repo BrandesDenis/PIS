@@ -1,5 +1,6 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.list import ListView
+from django.http import HttpRequest, HttpResponse
+from django.views.generic.list import ListView, View
 from django.urls import reverse_lazy
 
 from apps.reading.models import Reading
@@ -33,3 +34,8 @@ class ReadingDelete(DeleteView):
 class ReadingList(ListView):
     model = Reading
     template_name = "reading/list.html"
+
+
+class ReadingFiles(View):
+    def get(self, request: HttpRequest, pk: int) -> HttpResponse:
+        a = 1
