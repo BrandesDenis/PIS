@@ -3,38 +3,24 @@ from typing import Dict, Optional
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse, get_object_or_404, render
 from django.urls import reverse_lazy
-from django.views.generic.detail import SingleObjectTemplateResponseMixin
-from django.views.generic.edit import (
-    DeleteView,
-    ModelFormMixin,
-    ProcessFormView,
-)
-from django.views.generic.list import ListView
+from django.views.generic.edit import DeleteView
+from django.views import View
 
+from apps.core.views import CreateUpdateView
 from apps.thoughts.forms import ThoughtForm, TopicRowForm
 from apps.thoughts.models import Thought, Topic
 
 
 # TODO - транзакция
 # TODO - подумать, над наиболее правильным View
-class ThoughtView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
+class ThoughtView(CreateUpdateView):
     model = Thought
     template_name = "thought.html"
     form_class = ThoughtForm
     success_url = reverse_lazy("thoughts-list")
 
-    def get_object(self, queryset=None) -> Optional[Thought]:
-        try:
-            return super().get_object(queryset)
-        except AttributeError:
-            return None
-
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self.object = self.get_object()
-        return super().get(request, *args, **kwargs)
-
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self.object = self.get_object()
+        super().post(request, *args, **kwargs)
 
         errors = []
 
@@ -84,6 +70,13 @@ class ThoughtDeleteView(DeleteView):
     success_url = reverse_lazy("thoughts-list")
 
 
-class ThoughtListView(ListView):
-    model = Thought
-    template_name = "thoughts_list.html"
+class ThoughtListView(View):
+
+    def get(self, request: HttpRequest) -> HttpResponse:
+        thoughts_data = Thought.get_grouped_thoughts()
+
+        context = {
+            'thoughts_data': thoughts_data,
+        }
+
+        return render(request, "thoughts/thoughts_list.html", context)

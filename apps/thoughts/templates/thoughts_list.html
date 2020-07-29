@@ -1,18 +1,27 @@
 {% extends 'core/base.html' %}
-
 {% block body_block %}
-<br>
-<a href="{%url 'thoughts-new'%}">Создать новую</a>
-<br>
-{% if object_list%}
+<p><a href="{%url 'thoughts-new'%}">Создать новую</a></p>
+{% if thoughts_data%}
 <ul>
-    {% for thought in object_list %}
-    <li>
-        <a href="/thoughts/{{thought.pk}}"> {{thought.title}} </a>
-    </li>
+    {% for paragraph in thoughts_data %}
+    <p>{{paragraph.name}}</p>
+    <ul>
+        {% for topic in paragraph.topics %}
+        <li>
+            <p>{{topic.name}}</p>
+            <ul>
+                {% for thought in topic.thoughts %}
+                <li>
+                    <a href="/thoughts/{{thought.pk}}"> {{thought.title}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
     {% endfor %}
 </ul>
 {% else %}
-Пока нет ни одной записи
+Пока пусто :(
 {% endif %}
 {% endblock %}
