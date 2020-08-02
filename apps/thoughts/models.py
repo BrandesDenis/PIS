@@ -31,3 +31,25 @@ class Thought(models.Model):
 
     class Meta:
         ordering = ["-created"]
+
+    @classmethod
+    def get_grouped_thoughts(cls):
+        paragraphs = {}
+        thoughts = cls.objects.select_related('topic').all()
+        for thought in thoughts:
+            paragraph = thought.topic.paragraph
+            paragraph_data = paragraphs.setdefault(paragraph, {})
+
+            topic_title = thought.topic.title
+            topic_data = paragraph_data.setdefault(
+                topic_title, [])
+            topic_data.append(thought)
+
+        grouped_data = []
+        for paragraph_name, paragraph_data in paragraphs.items():
+            topics = []
+            grouped_data.append({'paragraph': paragraph_name, 'topics': topics})
+            for topic_name, topic_data in paragraph_data.items():
+                topics.append({'topic': topic_name, 'thoughts': topic_data})
+
+        return grouped_data
