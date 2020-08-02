@@ -19,7 +19,7 @@
     <tbody>
         {% for row in report_rows%}
         <tr>
-            <td><a href="{%url 'day_reports-detail' row.report%}">{{row.date}}</a></td>
+            <td><a href="{%url 'day_reports-detail' row.document%}">{{row.date}}</a></td>
             <td>{{row.total}}</td>
         </tr>
         {% endfor%}

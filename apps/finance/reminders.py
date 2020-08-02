@@ -17,25 +17,30 @@ def get_finance_reminders() -> List[Dict[str, date]]:
 
     day_report_dates = DayReport.objects\
         .filter(date__gte=start_date)\
+        .order_by('date')\
         .values('date').all()
 
     week_report_dates = PeriodicReport.objects\
         .filter(report_type=PeriodicReport.ReportTypes.WEEK)\
         .filter(date__gte=start_date)\
+        .order_by('date')\
         .values('date').all()
 
     month_report_dates = PeriodicReport.objects\
         .filter(report_type=PeriodicReport.ReportTypes.MONTH)\
         .filter(date__gte=start_date)\
+        .order_by('date')\
         .values('date').all()
 
     quarter_report_dates = PeriodicReport.objects\
         .filter(report_type=PeriodicReport.ReportTypes.QUARTER)\
         .filter(date__gte=start_date)\
+        .order_by('date')\
         .values('date').all()
 
     budget_dates = Budget.objects\
         .filter(date__gte=start_date)\
+        .order_by('date')\
         .values('date').all()
 
     check_date = start_date

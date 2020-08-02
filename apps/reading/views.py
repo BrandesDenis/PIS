@@ -1,10 +1,13 @@
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.http import HttpRequest, HttpResponse
-from django.views.generic.list import ListView, View
-from django.urls import reverse_lazy
+import subprocess
 
-from apps.reading.models import Reading
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, reverse
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView, View
+
 from apps.reading.forms import ReadingForm
+from apps.reading.models import Reading
 
 
 class ReadingCreate(CreateView):
@@ -38,4 +41,10 @@ class ReadingList(ListView):
 
 class ReadingFiles(View):
     def get(self, request: HttpRequest, pk: int) -> HttpResponse:
-        a = 1
+
+        reading = get_object_or_404(Reading, pk=pk)
+        path = reading.get_files_path()
+
+        subprocess.call(["xdg-open", path])
+
+        return HttpResponseRedirect(reverse("reading-detail", args=(pk,)))
