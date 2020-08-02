@@ -45,11 +45,11 @@
 {%for reminder in report_reminders%}
     Создать
     {%if reminder.type == 'day_report'%}
-        <a href="{%url 'day_reports-create' %}?date={{reminder.date|date_format}}">дневной отчет</a>
+        <a href="{%url 'day_reports-create' %}?date={{reminder.date|date_format}}&next={{request.get_full_path}}">дневной отчет</a>
     {%elif reminder.type == 'budget'%}
-        <a href="{%url 'budgets-create' %}?date={{reminder.date|date_format}}">бюджет</a>
+        <a href="{%url 'budgets-create' %}?date={{reminder.date|date_format}}&next={{request.get_full_path}}">бюджет</a>
     {%else%}
-        <a href="{%url 'periodic_reports-create' %}?date={{reminder.date|date_format}}&report_type={{reminder.report_type}}">периодический отчет</a> 
+        <a href="{%url 'periodic_reports-create' %}?date={{reminder.date|date_format}}&report_type={{reminder.report_type}}&next={{request.get_full_path}}">периодический отчет</a> 
     {%endif%}
     за {{reminder.date|date_format}}
     <br>

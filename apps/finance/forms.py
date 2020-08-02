@@ -53,7 +53,8 @@ class BudgetRowForm(FinanceRowForm):
 class PeriodicReportForm(forms.ModelForm):
     class Meta:
         model = PeriodicReport
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('trains',)
         widgets = {
             'comment': forms.Textarea(attrs={
                 'rows': 6,

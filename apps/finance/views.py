@@ -79,7 +79,8 @@ class DayReportView(NextRedirectMixin, CreateUpdateView):
                     errors.append(error)
 
         if success:
-            return HttpResponseRedirect(reverse("day_reports-all"))
+            next_redirect = self.request.POST.get('next')
+            return HttpResponseRedirect(next_redirect if next_redirect else reverse("day_reports-all"))
         else:
             transaction.rollback()
             context = self.get_context_data()
@@ -143,7 +144,8 @@ class BudgetView(NextRedirectMixin, CreateUpdateView):
                     errors.append(error)
 
         if success:
-            return HttpResponseRedirect(reverse("budgets-all"))
+            next_redirect = self.request.POST.get('next')
+            return HttpResponseRedirect(next_redirect if next_redirect else reverse("budgets-all"))
         else:
             transaction.rollback()
             context = self.get_context_data()
@@ -239,7 +241,8 @@ class PeriodicReportView(NextRedirectMixin, CreateUpdateView):
                     errors.append(error)
 
         if success:
-            return HttpResponseRedirect(reverse("periodic_reports-all"))
+            next_redirect = self.request.POST.get('next')
+            return HttpResponseRedirect(next_redirect if next_redirect else reverse("periodic_reports-all"))
         else:
             transaction.rollback()
             context = self.get_context_data()
