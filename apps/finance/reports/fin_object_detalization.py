@@ -12,7 +12,7 @@ def fin_object_detalization(start_date: date,
 
     report_rows = DayReportRow.objects.filter(fin_object=fin_object)\
         .filter(date__range=(start_date, end_date))\
-        .values('date', 'total', 'document')
+        .values('date', 'total', 'document', 'description')
 
     total = report_rows.aggregate(Sum('total')).get('total__sum', 0)
 

@@ -332,7 +332,7 @@ class PeriodicReport(models.Model):
                                 max_digits=15,
                                 decimal_places=2)
 
-    train = models.PositiveIntegerField(default=0, verbose_name='Тренировок')
+    trains = models.PositiveIntegerField(default=0, verbose_name='Тренировок')
 
     comment = models.TextField(blank=True, verbose_name='Комментарий')
 
@@ -386,7 +386,6 @@ class PeriodicReport(models.Model):
             Avg('p3'),
             Avg('p_union'),
             Sum('total'),
-            Sum('train'),
         )
 
         self.p1 = round(aggregates.get('p1__avg') or 0, 2)
@@ -394,7 +393,9 @@ class PeriodicReport(models.Model):
         self.p3 = round(aggregates.get('p3__avg') or 0, 2)
         self.p_union = round(aggregates.get('p_union__avg') or 0, 2)
         self.total = aggregates.get('total__sum') or 0
-        self.train = aggregates.get('total__train') or 0
+
+        self.trains = DayReport.objects.filter(date__range=period)\
+            .filter(train=True).count()
 
         comments_list = [report.comment for report in source]
         self.comment = '\n'.join(comments_list)
