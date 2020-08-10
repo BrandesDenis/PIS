@@ -15,7 +15,7 @@ from apps.thoughts.models import Thought, Topic
 # TODO - подумать, над наиболее правильным View
 class ThoughtView(CreateUpdateView):
     model = Thought
-    template_name = "thought.html"
+    template_name = "thoughts/thought.html"
     form_class = ThoughtForm
     success_url = reverse_lazy("thoughts-list")
 

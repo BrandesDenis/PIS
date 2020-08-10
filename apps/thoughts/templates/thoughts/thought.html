@@ -1,0 +1,102 @@
+{% extends 'core/base.html' %}
+
+{% block page_title_block %}
+{% endblock %}
+
+{% block body_block%}
+<form id="post_form" method="post">
+    {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
+    <div class="container-float-left">
+        <div class="row">
+            <p>
+            <div>
+                <input class="btn btn-primary" form="post_form" type="submit" value="Сохранить">
+                {%if is_update%}
+                <input class="btn btn-primary" form="delete_form" type="submit" value="Удалить">
+                {%endif%}
+            </div>
+            </p>
+            <!-- <p>
+                <input type="button" value="Добавить" onClick="addRow()">
+                <input type="button" value="Удалить" onClick="removeRow()">
+            </p> -->
+            <div class="table-responsive">
+                <table class="table table-bordered" id="report_table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Темы</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for topic in topics %}
+                        <tr onClick="selectRow(this)">
+                            <td>{{topic}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="container-float-left">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p>{{form.title.label_tag}}</p>
+                        <p>{{form.created.label_tag}}</p>
+                        <p>{{form.last_modified.label_tag}}</p>
+                        <p>{{form.finished.label_tag}}</p>
+                        <p>{{form.text.label_tag}}</p>
+                    </div>
+                    <div class="col-sm-8">
+                        <p>{{form.title}}</p>
+                        <p>{{form.created}}</p>
+                        <p>{{form.last_modified}}</p>
+                        <p>{{form.finished}}</p>
+                        <p>{{form.text}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+</form>
+{%if is_update %}
+<form id="delete_form" method="post" action="{%url 'day_reports-delete' object.pk %}">
+    {% csrf_token %}
+    {%if next%}
+    <input type="hidden" name="next" value="{{next}}">
+    {%endif%}
+</form>
+{%endif%}
+{% endblock%}
+
+{% block scripts_block %}
+<script type="text/javascript">
+
+    var tableRef = document.getElementById('report_table').getElementsByTagName('tbody')[0];
+
+    var rowTemplate = `
+        <td>{{topic_row_form.}}</td>
+    `
+    function selectRow(row) {
+        activeRows = tableRef.getElementsByClassName('selected');
+        for (let item of activeRows) {
+            item.classList.remove("selected")
+        }
+        row.classList.add("selected")
+    }
+
+    function addRow() {
+        rowId = tableRef.rows.length
+        newRow = tableRef.insertRow(rowId)
+        newRow.innerHTML = rowTemplate
+        newRow.onclick = function () { selectRow(this) }
+    }
+
+    function removeRow() {
+        activeRow = tableRef.getElementsByClassName('selected')[0];
+        tableRef.deleteRow(activeRow.rowIndex - 1)
+    }
+</script>
+{% endblock %}

@@ -22,12 +22,13 @@ class Topic(models.Model):
 
 
 class Thought(models.Model):
-    topics = models.ManyToManyField(Topic, related_name="thoughts")
-    title = models.CharField(max_length=100, unique=True, blank=False)
-    created = models.DateField(default=datetime.date.today)
-    last_modified = models.DateField(auto_now=True)
-    text = models.TextField()
-    finished = models.BooleanField(default=False)
+    topics = models.ManyToManyField(Topic, related_name="thoughts", verbose_name='Темы')
+    title = models.CharField(max_length=100, unique=True,
+                             blank=False, verbose_name='Темы')
+    created = models.DateField(default=datetime.date.today, verbose_name='Создано')
+    last_modified = models.DateField(auto_now=True, verbose_name='Последнее изменение')
+    text = models.TextField(verbose_name='Содержание')
+    finished = models.BooleanField(default=False, verbose_name='Завершен')
 
     class Meta:
         ordering = ["-created"]
@@ -35,9 +36,10 @@ class Thought(models.Model):
     @classmethod
     def get_grouped_thoughts(cls):
         paragraphs = {}
-        thoughts = cls.objects.select_related('topic').all()
+        # thoughts = cls.objects.select_related('topics').all()
+        thoughts = cls.objects.all()
         for thought in thoughts:
-            paragraph = thought.topic.paragraph
+            paragraph = thought.topics.paragraph
             paragraph_data = paragraphs.setdefault(paragraph, {})
 
             topic_title = thought.topic.title

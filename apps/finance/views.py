@@ -103,6 +103,8 @@ class DayReportView(NextRedirectMixin, CreateUpdateView):
                 report_date = today()
 
             context['form'].initial['date'] = date_pretty_format(report_date)
+        else:
+            rows = ()
 
         context["rows"] = [ReportRowForm(instance=row) for row in rows]
 
@@ -170,7 +172,7 @@ class BudgetView(NextRedirectMixin, CreateUpdateView):
 
             context['form'].initial['date'] = date_pretty_format(report_date)
 
-        context["rows"] = [ReportRowForm(instance=row) for row in rows]
+        context["rows"] = [BudgetRowForm(instance=row) for row in rows]
 
         return context
 
