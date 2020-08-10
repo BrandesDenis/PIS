@@ -14,18 +14,21 @@
         <tr>
             <th>Дата</th>
             <th>Сумма</th>
+            <th>Описание</th>
         </tr>
     </thead>
     <tbody>
         {% for row in report_rows%}
         <tr>
-            <td><a href="{%url 'day_reports-detail' row.report%}">{{row.date}}</a></td>
+            <td><a href="{%url 'day_reports-detail' row.document%}">{{row.date}}</a></td>
             <td>{{row.total}}</td>
+            <td>{{row.description}}</td>
         </tr>
         {% endfor%}
         <tr style="font-weight:bold">
             <td>Итого</td>
             <td>{{total}}</td>
+            <td></td>
         </tr>
     </tbody>
 

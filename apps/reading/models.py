@@ -1,6 +1,8 @@
+import os
 from datetime import date
 
 from django.db import models
+from django.conf import settings
 
 
 class Reading(models.Model):
@@ -16,3 +18,10 @@ class Reading(models.Model):
 
     class Meta:
         ordering = ["end", "title"]
+
+    def get_files_path(self) -> str:
+        path = os.path.join(settings.READING_PATH, str(self.pk))
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        return path
