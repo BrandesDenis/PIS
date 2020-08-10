@@ -116,6 +116,7 @@ class DayReportDelete(NextRedirectMixin, DeleteView):
 
 
 class DayReportList(ListView):
+    paginate_by = 15
     model = DayReport
     template_name = "finance/day_report/list.html"
 
