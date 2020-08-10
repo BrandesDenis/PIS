@@ -21,7 +21,7 @@ class FinanceObject(models.Model):
     need_description = models.BooleanField(default=False,
                                            verbose_name='Требуется указывать описание')
 
-    archive = models.BooleanField(default=False, verbose_name='Архиваная')
+    archive = models.BooleanField(default=False, verbose_name='Архивная')
 
     def __str__(self):
         return self.title
@@ -219,9 +219,12 @@ class FinanceRegister(models.Model):
 
     @classmethod
     def get_current_balance(cls) -> Decimal:
-        latest_month = cls.objects.latest()
+        try:
+            current_balance = cls.objects.latest().balance
+        except ObjectDoesNotExist:
+            current_balance = Decimal(0)
 
-        return latest_month.balance if latest_month else Decimal(0)
+        return current_balance
 
     @classmethod
     def get_date_balance(cls, date: datetime.date) -> Decimal:

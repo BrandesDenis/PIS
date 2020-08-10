@@ -120,6 +120,8 @@
         newRow = tableRef.insertRow(rowId)
         newRow.innerHTML = rowTemplate
         newRow.onclick = function () { selectRow(this) }
+        selectRow(newRow)
+        newRow.getElementsByTagName("select")[0].focus()
     }
 
     function removeRow() {
