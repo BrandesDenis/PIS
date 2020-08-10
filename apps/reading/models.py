@@ -11,13 +11,9 @@ class Reading(models.Model):
     start = models.DateField(default=date.today, verbose_name='Начало')
     end = models.DateField(verbose_name='Окончание', blank=True, null=True)
     description = models.TextField(blank=True, verbose_name='Описание')
-    files_dir = models.CharField(
-        max_length=500,
-        blank=True,
-        verbose_name='Путь к прикрепленным файлам')
 
     class Meta:
-        ordering = ["end", "title"]
+        ordering = ["-end", "title"]
 
     def get_files_path(self) -> str:
         path = os.path.join(settings.READING_PATH, str(self.pk))

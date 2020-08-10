@@ -37,6 +37,7 @@ class ReadingDelete(DeleteView):
 class ReadingList(ListView):
     model = Reading
     template_name = "reading/list.html"
+    paginate_by = 15
 
 
 class ReadingFiles(View):

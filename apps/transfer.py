@@ -3,11 +3,12 @@ import json
 import os
 from apps.finance.models import DayReport, DayReportRow, FinanceObject, Budget, PeriodicReport
 from apps.tasks.models import Task
+from apps.reading.models import Reading
 from django.db.utils import IntegrityError
 
 
 def transfer(_):
-    load_tasks()
+    load_readings()
 
 
 '''
@@ -228,3 +229,36 @@ def load_tasks():
         except IntegrityError:
             task.title += data['end']
             task.save()
+
+
+def load_readings():
+    source_path = 'Z:\\перенос ПИС\\\Чтения'
+
+    files = os.listdir(source_path)
+
+    for file in files:
+        if '.ini' in file:
+            continue
+
+        path = os.path.join(source_path, file)
+
+        with open(path, 'rb') as f:
+            data_str = f.read().decode('utf-8-sig')
+
+        data = json.loads(data_str)
+
+        end_ = data['finished']
+        if end_ != '':
+            end = datetime.datetime.strptime(end_, '%d.%m.%Y').date()
+        else:
+            end = None
+
+        reading = Reading(
+            start=datetime.datetime.strptime(data['created'], '%d.%m.%Y').date(),
+            end=end,
+            description=data['text'],
+            title=data['title'],
+            autor=data['autor'],
+        )
+
+        reading.save()
