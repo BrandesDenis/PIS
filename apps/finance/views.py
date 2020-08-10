@@ -94,8 +94,6 @@ class DayReportView(NextRedirectMixin, CreateUpdateView):
         if self.object:
             context["is_update"] = True
             rows = [row for row in self.object.rows.all()]
-        else:
-            rows = DayReportRow.get_default_rows()
 
             report_date_param = self.request.GET.get('date')
             if report_date_param:

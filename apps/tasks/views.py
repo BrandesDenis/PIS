@@ -37,6 +37,7 @@ class TaskDelete(NextRedirectMixin, DeleteView):
 class TaskList(ListView):
     model = Task
     template_name = "tasks/task/list.html"
+    paginate_by = 15
 
     def get_queryset(self) -> QuerySet:
         status_filter = self.request.GET.get('status')

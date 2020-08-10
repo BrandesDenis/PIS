@@ -2,11 +2,36 @@ import datetime
 import json
 import os
 from apps.finance.models import DayReport, DayReportRow, FinanceObject, Budget, PeriodicReport
+from apps.tasks.models import Task
+from django.db.utils import IntegrityError
+
+
+def transfer(_):
+    load_tasks()
+
+
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
 
 finance_objects_matching = {
 }
 
-not_mathing_object = FinanceObject.objects.get(title='Разовые расходы')
+# not_mathing_object = FinanceObject.objects.get(title='Разовые расходы')
+not_mathing_object = None
 
 '''
 нужно учесть описание для разовых
@@ -22,8 +47,8 @@ def load_day_reports():
     for file in files:
         path = os.path.join(source_path, file)
 
-        with open(path) as f:
-            report_data_str = f.read()
+        with open(path, 'rb') as f:
+            report_data_str = f.read().decode('utf-8')
 
         report_data = json.loads(report_data_str)
 
@@ -79,8 +104,8 @@ def load_budgets():
     for file in files:
         path = os.path.join(source_path, file)
 
-        with open(path) as f:
-            data_str = f.read()
+        with open(path, 'rb') as f:
+            data_str = f.read().decode('utf-8')
 
         data = json.loads(data_str)
 
@@ -141,8 +166,8 @@ def load_priodic_reports():
         for file in files:
             path = os.path.join(source_path, file)
 
-            with open(path) as f:
-                data_str = f.read()
+            with open(path, 'rb') as f:
+                data_str = f.read().decode('utf-8')
 
             data = json.loads(data_str)
 
@@ -160,15 +185,18 @@ def load_priodic_reports():
 
 
 def load_tasks():
-    source_path = ''
+    source_path = 'Z:\\перенос ПИС\\Задачи'
 
     files = os.listdir(source_path)
 
     for file in files:
+        if '.ini' in file:
+            continue
+
         path = os.path.join(source_path, file)
 
-        with open(path) as f:
-            data_str = f.read()
+        with open(path, 'rb') as f:
+            data_str = f.read().decode('utf-8-sig')
 
         data = json.loads(data_str)
 
@@ -180,11 +208,23 @@ def load_tasks():
         else:
             status = 0
 
-        PeriodicReport(
-            start=datetime.datetime.strptime(data['start'], '%d.%m.%y'),
-            end=datetime.datetime.strptime(data['end'], '%d.%m.%y'),
+        paragraph_ = data['paragraph'].replace('П', '')
+        if paragraph_:
+            paragraph = int(paragraph_)
+        else:
+            paragraph = 52
+
+        task = Task(
+            start=datetime.datetime.strptime(data['start'], '%d.%m.%Y').date(),
+            end=datetime.datetime.strptime(data['end'], '%d.%m.%Y').date(),
             description=data['text'],
             title=data['title'],
-            paragraph=int(data['paragraph'].replace('П', '')),
+            paragraph=paragraph,
             status=status
-        ).save()
+        )
+
+        try:
+            task.save()
+        except IntegrityError:
+            task.title += data['end']
+            task.save()

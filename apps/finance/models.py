@@ -145,19 +145,6 @@ class DayReportRow(FinanceDocumentRow):
                                    related_name="report_rows",
                                    on_delete=models.PROTECT)
 
-    @classmethod
-    def get_default_rows(cls) -> Iterable['DayReportRow']:
-        default_row = cls()
-
-        try:
-            fin_object = FinanceObject.objects.get(title='Питание')
-        except ObjectDoesNotExist:
-            pass
-        else:
-            default_row.fin_object = fin_object
-
-        return [default_row]
-
 
 class FinanceRegister(models.Model):
     month = models.DateField(default=datetime.date.today,

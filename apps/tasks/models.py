@@ -28,7 +28,7 @@ class Task(models.Model):
     description = models.TextField(blank=True, verbose_name='Описание')
 
     class Meta:
-        ordering = ["end", "title"]
+        ordering = ["-end", "title"]
 
     def set_status(self, status: int) -> None:
         if status not in (0, 1, 2):
