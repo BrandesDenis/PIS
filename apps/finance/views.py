@@ -94,7 +94,8 @@ class DayReportView(NextRedirectMixin, CreateUpdateView):
         if self.object:
             context["is_update"] = True
             rows = [row for row in self.object.rows.all()]
-
+            context["rows"] = [ReportRowForm(instance=row) for row in rows]
+        else:
             report_date_param = self.request.GET.get('date')
             if report_date_param:
                 report_date = datetime.datetime.strptime(report_date_param,
@@ -103,10 +104,6 @@ class DayReportView(NextRedirectMixin, CreateUpdateView):
                 report_date = today()
 
             context['form'].initial['date'] = date_pretty_format(report_date)
-        else:
-            rows = ()
-
-        context["rows"] = [ReportRowForm(instance=row) for row in rows]
 
         return context
 
