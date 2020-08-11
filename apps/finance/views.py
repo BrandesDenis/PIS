@@ -289,6 +289,7 @@ class PeriodicReportDelete(NextRedirectMixin, DeleteView):
 class PeriodicReportList(ListView):
     model = PeriodicReport
     template_name = "finance/periodic_report/list.html"
+    paginate_by = 15
 
     def get_context_data(self, **kwargs) -> Dict:
         context = super().get_context_data(**kwargs)

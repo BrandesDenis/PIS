@@ -8,7 +8,7 @@ from django.db.utils import IntegrityError
 
 
 def transfer(_):
-    load_budgets()
+    load_priodic_reports()
 
 
 '''
@@ -311,32 +311,39 @@ def load_budgets():
 
 
 def load_priodic_reports():
-    source_path_week = ''
-    source_path_month = ''
-    source_path_quarter = ''
+    source_path = 'Z:\\перенос ПИС\\Периодические отчеты'
 
-    for report_type, source_path in enumerate((source_path_week, source_path_month, source_path_quarter)):
-        files = os.listdir(source_path)
+    files = os.listdir(source_path)
 
-        for file in files:
-            path = os.path.join(source_path, file)
+    for file in files:
+        if '.ini' in file:
+            continue
 
-            with open(path, 'rb') as f:
-                data_str = f.read().decode('utf-8-sig')
+        if file.startswith('week'):
+            report_type = 0
+        elif file.startswith('month'):
+            report_type = 1
+        elif file.startswith('quarter'):
+            report_type = 2
 
-            data = json.loads(data_str)
+        path = os.path.join(source_path, file)
 
-            PeriodicReport(
-                date=datetime.datetime.strptime(data['date'], '%d.%m.%Y'),
-                report_type=report_type,
-                p1=float(data['p1']),
-                p13=float(data['p13']),
-                p3=float(data['p3']),
-                p_union=float(data['p_union']),
-                trains=int(data['trains']),
-                comment=data['comment'],
-                total=float(data['total']),
-            ).save()
+        with open(path, 'rb') as f:
+            data_str = f.read().decode('utf-8-sig')
+
+        data = json.loads(data_str)
+
+        PeriodicReport(
+            date=datetime.datetime.strptime(data['date'], '%d.%m.%Y'),
+            report_type=report_type,
+            p1=float(data['p11']),
+            p13=float(data['p13']),
+            p3=float(data['p3']),
+            p_union=float(data['union']),
+            trains=int(data['trains']),
+            comment=data['comment'],
+            total=float(data['finance_total']),
+        ).save()
 
 
 def load_tasks():
