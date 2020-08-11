@@ -179,21 +179,18 @@ class FinanceRegister(models.Model):
         month_total = cls._get_range_operations_total(
             month_start_, month_end_)
 
-        if month_total:
-            month_balance = previous_month_balance + month_total
+        month_balance = previous_month_balance + month_total
 
+        if month_total:
             cls.objects.update_or_create(month=month_end_,
                                          defaults={
                                              'balance': month_balance,
                                              'total': month_total,
                                          })
+        else:
+            cls.objects.filter(month=month_end_).delete()
 
-            cls._recalculate_next_months_balances(month_end_, month_balance)
-
-    @classmethod
-    def recalculate_all(cls) -> None:
-        # cls.objects.all().delete()
-        pass
+        cls._recalculate_next_months_balances(month_end_, month_balance)
 
     @classmethod
     def _recalculate_next_months_balances(cls,
