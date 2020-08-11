@@ -15,7 +15,7 @@
 {% endblock%}
 
 {% block navigation_block%}
-<a href="{%url 'day_reports-all' %}">Список бюджетов</a>
+<a href="{%url 'budgets-all' %}">Список бюджетов</a>
 {% endblock%}
 
 {% block body_block%}
@@ -88,6 +88,8 @@
         newRow = tableRef.insertRow(rowId)
         newRow.innerHTML = rowTemplate
         newRow.onclick = function () { selectRow(this) }
+        selectRow(newRow)
+        newRow.getElementsByTagName("select")[0].focus()
     }
 
     function removeRow() {

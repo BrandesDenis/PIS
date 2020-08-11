@@ -145,6 +145,9 @@ class DayReportRow(FinanceDocumentRow):
                                    related_name="report_rows",
                                    on_delete=models.PROTECT)
 
+    class Meta:
+        ordering = ('-date',)
+
 
 class FinanceRegister(models.Model):
     month = models.DateField(default=datetime.date.today,
@@ -275,6 +278,9 @@ class BudgetRow(FinanceDocumentRow):
     fin_object = models.ForeignKey(FinanceObject,
                                    related_name="budget_rows",
                                    on_delete=models.PROTECT)
+
+    class Meta:
+        ordering = ('-date',)
 
     @classmethod
     def get_default_rows(cls) -> Iterable['BudgetRow']:

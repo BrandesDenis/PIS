@@ -1,5 +1,7 @@
 {% extends 'core/base.html' %}
-
+{% block head_scripts_block %}
+{{ form.media }}
+{% endblock %}
 {% block page_title_block %}
 {% endblock %}
 
@@ -54,6 +56,7 @@
                         <p>{{form.last_modified}}</p>
                         <p>{{form.finished}}</p>
                         <p>{{form.text}}</p>
+                        <p>{{form.content|safe}}</p>
                     </div>
                 </div>
             </div>

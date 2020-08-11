@@ -16,6 +16,7 @@ urlpatterns = [
     path("finance/", include("apps.finance.urls")),
     path("thoughts/", include("apps.thoughts.urls")),
     path("reading/", include("apps.reading.urls")),
+    path('tinymce/', include('tinymce.urls')),
  
 
 

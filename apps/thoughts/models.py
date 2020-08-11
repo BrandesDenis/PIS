@@ -1,5 +1,6 @@
 import datetime
 from django.db import models
+from tinymce import HTMLField
 
 
 class Paragraph(models.Model):
@@ -29,6 +30,7 @@ class Thought(models.Model):
     last_modified = models.DateField(auto_now=True, verbose_name='Последнее изменение')
     text = models.TextField(verbose_name='Содержание')
     finished = models.BooleanField(default=False, verbose_name='Завершен')
+    content = HTMLField(null=True)
 
     class Meta:
         ordering = ["-created"]
