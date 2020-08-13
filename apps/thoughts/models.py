@@ -1,6 +1,6 @@
 import datetime
 from django.db import models
-from tinymce import HTMLField
+from tinymce.models import HTMLField
 
 from apps.core.models import PARAGRAPHS
 

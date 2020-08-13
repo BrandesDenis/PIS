@@ -42,7 +42,8 @@ class Task(models.Model):
         tasks = []
         today = date.today()
         for task in Task.objects\
-                .filter(status=cls.TaskStatuses.IN_PROGRESS).all():
+                .filter(status=cls.TaskStatuses.IN_PROGRESS)\
+                .order_by('end').all():
             expired = task.end <= today
 
             tasks.append({
