@@ -14,7 +14,7 @@
     <tbody>
         {% for obj in object_list %}
         <tr>
-            <td>{{obj.end}}</td>
+            <td>{{obj.end|none_format}}</td>
             <td><a href="{%url 'reading-detail' obj.pk%}">{{obj.title}}</a></td>
             <td>{{obj.autor}}</td>
         </tr>

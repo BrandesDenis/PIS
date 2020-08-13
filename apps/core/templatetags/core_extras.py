@@ -22,3 +22,8 @@ def choice_field_display(value: Model, field_name: str) -> str:
 @register.filter()
 def date_format(value: date) -> str:
     return date_pretty_format(value)
+
+
+@register.filter()
+def none_format(value: date) -> str:
+    return '' if value is None else value

@@ -3,7 +3,8 @@ from typing import Dict, Optional
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import reverse, get_object_or_404, render
 from django.urls import reverse_lazy
-from django.views.generic.edit import DeleteView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic.list import ListView
 from django.views import View
 
 from apps.core.views import CreateUpdateView
@@ -11,11 +12,43 @@ from apps.thoughts.forms import ThoughtForm, TopicRowForm
 from apps.thoughts.models import Thought, Topic
 
 
-# TODO - транзакция
-# TODO - подумать, над наиболее правильным View
+class IndexView(View):
+    def get(self, request: HttpRequest) -> HttpResponse:
+        return render(request, "thoughts/index.html")
+
+
+class TopicCreate(CreateView):
+    model = Topic
+    template_name = "thoughts/topic/form.html"
+    fields = "__all__"
+    success_url = reverse_lazy("topics-list")
+
+
+class TopicUpdate(UpdateView):
+    model = Topic
+    template_name = "thoughts/topic/form.html"
+    fields = "__all__"
+    success_url = reverse_lazy("topics-list")
+
+    def get_context_data(self, **kwargs) -> Dict:
+        context = super().get_context_data(**kwargs)
+        context["is_update"] = True
+        return context
+
+
+class TopicDelete(DeleteView):
+    model = Topic
+    success_url = reverse_lazy("topics-list")
+
+
+class TopicList(ListView):
+    model = Topic
+    template_name = "thoughts/topic/list.html"
+
+
 class ThoughtView(CreateUpdateView):
     model = Thought
-    template_name = "thoughts/thought.html"
+    template_name = "thoughts/thought/form.html"
     form_class = ThoughtForm
     success_url = reverse_lazy("thoughts-list")
 
@@ -79,4 +112,4 @@ class ThoughtListView(View):
             'thoughts_data': thoughts_data,
         }
 
-        return render(request, "thoughts/thoughts_list.html", context)
+        return render(request, "thoughts/thought/list.html", context)

@@ -1,0 +1,30 @@
+{%extends 'core/base.html' %}
+{% load static %}
+
+{% block page_title_block%}
+Список тем
+{% endblock%}
+
+{% block navigation_block%}
+<p><a href="{%url 'thoughts-index' %}">Мысли</a></p>
+{% endblock%}
+
+{% block body_block%}
+<p><a class="btn btn-primary" href="{%url 'topics-new' %}">Создать</a></p>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">title</th>
+            <th scope="col">paragraph</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for obj in object_list %}
+        <tr>
+            <td><a href="{%url 'topics-detail' obj.pk%}">{{obj.title}}</a></td>
+            <td>{{obj.paragraph}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock%}

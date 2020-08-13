@@ -2,28 +2,22 @@ import datetime
 from django.db import models
 from tinymce import HTMLField
 
-
-class Paragraph(models.Model):
-    number = models.PositiveIntegerField(unique=True, blank=False)
-    title = models.CharField(max_length=100, unique=True, blank=False)
-
-    class Meta:
-        ordering = ["number"]
+from apps.core.models import PARAGRAPHS
 
 
 class Topic(models.Model):
-    paragraph = models.ForeignKey(Paragraph, on_delete=models.PROTECT)
+    paragraph = models.IntegerField(choices=PARAGRAPHS, verbose_name='Пункт')
     title = models.CharField(max_length=100, unique=True, blank=False)
 
     class Meta:
-        ordering = ["paragraph"]
+        ordering = ['paragraph', 'title']
 
     def __str__(self):
-        return f'{self.title}({self.paragraph.number})'
+        return f'{self.title}({self.paragraph})'
 
 
 class Thought(models.Model):
-    topics = models.ManyToManyField(Topic, related_name="thoughts", verbose_name='Темы')
+    topics = models.ManyToManyField(Topic, related_name="thoughts", verbose_name='Заголовок')
     title = models.CharField(max_length=100, unique=True,
                              blank=False, verbose_name='Темы')
     created = models.DateField(default=datetime.date.today, verbose_name='Создано')
@@ -37,23 +31,22 @@ class Thought(models.Model):
 
     @classmethod
     def get_grouped_thoughts(cls):
-        paragraphs = {}
-        # thoughts = cls.objects.select_related('topics').all()
-        thoughts = cls.objects.all()
-        for thought in thoughts:
-            paragraph = thought.topics.paragraph
-            paragraph_data = paragraphs.setdefault(paragraph, {})
+        grouped_thoughts = []
+        current_paragraph = None
+        current_paragraph_data = None
+        for topic in Topic.objects.all():
+            paragraph = topic.paragraph
+            if paragraph != current_paragraph:
+                current_paragraph = paragraph
+                current_paragraph_data = []
+                grouped_thoughts.append({
+                    'name': paragraph,
+                    'topics': current_paragraph_data,
+                })
 
-            topic_title = thought.topic.title
-            topic_data = paragraph_data.setdefault(
-                topic_title, [])
-            topic_data.append(thought)
-
-        grouped_data = []
-        for paragraph_name, paragraph_data in paragraphs.items():
-            topics = []
-            grouped_data.append({'paragraph': paragraph_name, 'topics': topics})
-            for topic_name, topic_data in paragraph_data.items():
-                topics.append({'topic': topic_name, 'thoughts': topic_data})
-
-        return grouped_data
+            current_paragraph_data.append({
+                'name': topic.title,
+                'thoughts': topic.thoughts.all(),
+            })
+        
+        return grouped_thoughts

@@ -17,4 +17,4 @@ class ThoughtForm(forms.ModelForm):
 
 
 class TopicRowForm(forms.Form):
-    topic = forms.ModelChoiceField(Topic.objects, required=True)
+    topic = forms.ModelChoiceField(Topic.objects.all(), required=True)
