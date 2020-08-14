@@ -1,14 +1,17 @@
 import datetime
 import json
 import os
+
+from django.db.utils import IntegrityError
+
 from apps.finance.models import DayReport, DayReportRow, FinanceObject, Budget, BudgetRow, PeriodicReport
 from apps.tasks.models import Task
 from apps.reading.models import Reading
-from django.db.utils import IntegrityError
+from apps.thoughts.models import Thought, Topic
 
 
 def transfer(_):
-    load_priodic_reports()
+    load_thoughts()
 
 
 '''
@@ -423,3 +426,39 @@ def load_readings():
         )
 
         reading.save()
+
+
+def load_thoughts():
+    source_path = 'Z:\\перенос ПИС\\Исследования'
+
+    files = os.listdir(source_path)
+
+    for file in files:
+        if '.ini' in file:
+            continue
+
+        path = os.path.join(source_path, file)
+
+        with open(path, 'rb') as f:
+            data_str = f.read().decode('utf-8-sig')
+
+        data = json.loads(data_str)
+
+        thought = Thought(
+            created=datetime.datetime.strptime(data['created'], '%d.%m.%Y').date(),
+            finished=data['finished'],
+            title=data['title'],
+            content=data['html'],
+        )
+
+        thought.save()
+
+        for topic_data in data['topics']:
+            topic, _ = Topic.objects.get_or_create(
+                title=topic_data['title'],
+                defaults={'paragraph': int(topic_data['paragraph'].replace('П', ''))}
+            )
+            topic.save()
+            thought.topics.add(topic)
+
+        thought.save()

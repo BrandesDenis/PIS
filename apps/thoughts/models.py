@@ -17,12 +17,11 @@ class Topic(models.Model):
 
 
 class Thought(models.Model):
-    topics = models.ManyToManyField(Topic, related_name="thoughts", verbose_name='Заголовок')
+    topics = models.ManyToManyField(Topic, related_name="thoughts", verbose_name='Темы')
     title = models.CharField(max_length=100, unique=True,
-                             blank=False, verbose_name='Темы')
+                             blank=False, verbose_name='Заголовок')
     created = models.DateField(default=datetime.date.today, verbose_name='Создано')
     last_modified = models.DateField(auto_now=True, verbose_name='Последнее изменение')
-    text = models.TextField(verbose_name='Содержание')
     finished = models.BooleanField(default=False, verbose_name='Завершен')
     content = HTMLField(null=True)
 
