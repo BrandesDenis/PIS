@@ -12,12 +12,13 @@ from apps.thoughts.models import Thought, Topic
 
 def transfer(_):
     load_thoughts()
+    load_day_reports()
+    load_budgets()
+    load_periodic_reports()
+    load_tasks()
+    load_readings()
+    load_thoughts()
 
-
-'''
-
-
-'''
 
 not_loading_objects = {
     'Перераспределение(Д)',
@@ -139,11 +140,6 @@ finance_objects_matching = {
 
 not_mathing_object = FinanceObject.objects.get(title='Разовые расходы')
 # not_mathing_object = None
-
-'''
-нужно учесть описание для разовых
-нужно добавить тренировки в отчеты и периодчиеские отчеты
-'''
 
 
 def load_day_reports():
@@ -313,7 +309,7 @@ def load_budgets():
         budget.save()
 
 
-def load_priodic_reports():
+def load_periodic_reports():
     source_path = 'Z:\\перенос ПИС\\Периодические отчеты'
 
     files = os.listdir(source_path)
