@@ -1,6 +1,8 @@
 {%extends 'core/base.html'%}
 {% load core_extras %}
 
+{% block title_block %}Чтение{% endblock %}
+
 {% block body_block%}
 <p><a class="btn btn-primary" href="{%url 'reading-create'%}">Создать</a></p>
 <table class="table">

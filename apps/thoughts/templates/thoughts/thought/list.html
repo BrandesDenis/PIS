@@ -1,4 +1,7 @@
 {% extends 'core/base.html' %}
+
+{% block title_block %}Список мыслей{% endblock %}
+
 {% block body_block %}
 <p><a href="{%url 'thoughts-new'%}">Создать новую</a></p>
 {% if thoughts_data%}

@@ -26,7 +26,7 @@ class ReportForm(forms.ModelForm):
             }),
             'comment': forms.Textarea(attrs={
                 'rows': 6,
-                'cols': 80,
+                'cols': 120,
                 'placeholder': 'Комментарий'
             }),
         }
@@ -56,8 +56,8 @@ class PeriodicReportForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'comment': forms.Textarea(attrs={
-                'rows': 6,
-                'cols': 80,
+                'rows': 15,
+                'cols': 120,
                 'placeholder': 'Комментарий'
             }),
         }

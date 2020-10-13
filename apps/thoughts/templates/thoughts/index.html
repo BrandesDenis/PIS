@@ -1,5 +1,7 @@
 {%extends 'core/base.html'%}
 
+{% block title_block %}Мысли{% endblock %}
+
 {% block body_block%}
 <p><a href="{%url 'topics-list' %}">Темы</a></p>
 <p><a href="{%url 'thoughts-list' %}">Мысли</a></p>
