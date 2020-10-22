@@ -371,7 +371,7 @@ class PeriodicReport(models.Model):
         source = self._get_report_source()
         period = self._get_report_period()
 
-        source = source.filter(date__range=period)
+        source = source.filter(date__range=period).order_by('date')
 
         aggregates = source.aggregate(
             Avg('p1'),
@@ -397,4 +397,5 @@ class PeriodicReport(models.Model):
         period = self._get_report_period()
 
         return Task.objects.filter(end__range=period)\
+            .order_by('start')\
             .exclude(status=Task.TaskStatuses.IN_PROGRESS).all()

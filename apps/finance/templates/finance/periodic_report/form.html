@@ -7,11 +7,13 @@
 }
 {% endblock %}
 
+{% block title_block %}Периодический отчет{% endblock %}
+
 {% block page_title_block%}
 {%if is_update %}
-Периодический отчет
+{{object|choice_field_display:"report_type"}} отчет
 {%else%}
-Новый периодический отчет
+{{object|choice_field_display:"report_type"}} отчет - создание
 {%endif%}
 {% endblock%}
 

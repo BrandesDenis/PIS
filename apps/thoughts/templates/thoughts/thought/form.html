@@ -2,6 +2,9 @@
 {% block head_scripts_block %}
 {{ form.media }}
 {% endblock %}
+
+{% block title_block %}Мысль{% endblock %}
+
 {% block page_title_block %}
 {% endblock %}
 
@@ -40,29 +43,22 @@
             </tbody>
         </table>
     </div>
-
     <div class="container-float-left">
         <div class="row">
-            <div class="container-float-left">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <p>{{form.title.label_tag}}</p>
-                        <p>{{form.created.label_tag}}</p>
-                        <p>{{form.last_modified.label_tag}}</p>
-                        <p>{{form.finished.label_tag}}</p>
-                        <p>{{form.text.label_tag}}</p>
-                    </div>
-                    <div class="col-sm-8">
-                        <p>{{form.title}}</p>
-                        <p>{{form.created}}</p>
-                        <p>{{form.last_modified}}</p>
-                        <p>{{form.finished}}</p>
-                        <p>{{form.text}}</p>
-                        <p>{{form.content|safe}}</p>
-                    </div>
-                </div>
+            <div class="col-sm-4">
+                <p>{{form.title.label_tag}}</p>
+                <p>{{form.created.label_tag}}</p>
+                <p>{{form.last_modified.label_tag}}</p>
+                <p>{{form.finished.label_tag}}</p>
+            </div>
+            <div class="col-sm-8">
+                <p>{{form.title}}</p>
+                <p>{{form.created}}</p>
+                <p>{{form.last_modified}}</p>
+                <p>{{form.finished}}</p>
             </div>
         </div>
+        <p>{{form.content|safe}}</p>
     </div>
     <hr>
 </form>

@@ -8,6 +8,7 @@ from django.views.generic.list import ListView
 from django.views import View
 
 from apps.core.views import CreateUpdateView
+from apps.core.collect_request_data import collect_rows
 from apps.thoughts.forms import ThoughtForm, TopicRowForm
 from apps.thoughts.models import Thought, Topic
 
@@ -63,11 +64,12 @@ class ThoughtView(CreateUpdateView):
 
             thought.topics.clear()
             has_topics = False
-            for key, value in request.POST.items():
-                if "topic" in key:
-                    topic = get_object_or_404(Topic, pk=value)
-                    thought.topics.add(topic)
-                    has_topics = True
+
+            columns = 'topic',
+            for topic_ in collect_rows(request.POST, columns):
+                topic = get_object_or_404(Topic, pk=topic_[0])
+                thought.topics.add(topic)
+                has_topics = True
 
             if not has_topics:
                 errors.append("Нельзя записать объект без темы")
