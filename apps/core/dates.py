@@ -43,7 +43,13 @@ def quarter_start(dt: date) -> date:
 
 def quarter_end(dt: date) -> date:
     quarter_start_ = quarter_start(dt)
-    return quarter_start_.replace(month=quarter_start_.month+3) - timedelta(days=1)
+    if quarter_start_.month < 10:
+        quarter_end_ = quarter_start_.replace(
+            month=quarter_start_.month+3) - timedelta(days=1)
+    else:
+        quarter_end_ = quarter_start_.replace(month=12, day=31)
+
+    return quarter_end_
 
 
 def html_date_format(dt: date) -> str:
